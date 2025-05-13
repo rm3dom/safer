@@ -1,3 +1,6 @@
+[![Main](https://github.com/rm3dom/safer/actions/workflows/main.yml/badge.svg)](https://github.com/rm3dom/safer/actions/workflows/main.yml)
+
+
 # Safer - Kotlin Compiler Plugin
 
 Safer is a Kotlin compiler plugin focused on enhancing code safety by ensuring return values are used and that
