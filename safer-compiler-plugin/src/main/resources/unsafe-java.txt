@@ -1,0 +1,29 @@
+# Almost every function in Java is unsafe. We can only list the ones we have alternatives for.
+# Mostly untested and not a complete list
+
+# Collections
+java.util.List.get(Int) -> use getOrElse or getOrNull
+java.util.ArrayList.get(Int) -> use getOrElse or getOrNull
+java.util.LinkedList.get(Int) -> use getOrElse or getOrNull
+java.util.Vector.get(Int) -> use getOrElse or getOrNull
+java.util.Map.get(*) -> use getOrElse or getOrNull
+java.util.HashMap.get(*) -> use getOrElse or getOrNull
+java.util.TreeMap.get(*) -> use getOrElse or getOrNull
+java.util.LinkedHashMap.get(*) -> use getOrElse or getOrNull
+java.util.Hashtable.get(*) -> use getOrElse or getOrNull
+
+
+# Java properties
+java.lang.Boolean.getBoolean(*) -> use Properties.getOrDefault or Properties.getOrElse and toBooleanStrictOrNull
+java.lang.Integer.getInteger(*) -> use Properties.getOrDefault or Properties.getOrElse and toIntOrNull
+java.lang.Integer.getInteger(*, *) -> use Properties.getOrDefault or Properties.getOrElse and toIntOrNull
+java.lang.Long.getLong(*) -> use Properties.getOrDefault or Properties.getOrElse and toLongOrNull
+java.lang.Long.getLong(*, *) -> use Properties.getOrDefault or Properties.getOrElse and toLongOrNull
+
+# Type conversions
+java.util.Optional.get() -> use orElse/orElseGet
+
+# These will box
+# java.util.OptionalInt.getAsInt() -> use orElse/orElseGet
+# java.util.OptionalLong.getAsLong() -> use orElse/orElseGet
+# java.util.OptionalDouble.getAsDouble() -> use orElse/orElseGet

@@ -1,0 +1,79 @@
+
+# Gets
+kotlin.collections.List.get(Int) -> use getOrElse or getOrNull
+kotlin.collections.MutableList.get(Int) -> use getOrElse or getOrNull
+kotlin.Array.get(Int) -> use getOrElse or getOrNull
+
+# Unsafe but boxing/lifting primitives is slow
+# kotlin.ByteArray.get(Int) -> use getOrNull
+# kotlin.CharArray.get(Int) -> use getOrNull
+# kotlin.ShortArray.get(Int) -> use getOrNull
+# kotlin.IntArray.get(Int) -> use getOrNull
+# kotlin.LongArray.get(Int) -> use getOrNull
+# kotlin.FloatArray.get(Int) -> use getOrNull
+# kotlin.DoubleArray.get(Int) -> use getOrNull
+# kotlin.BooleanArray.get(Int) -> use getOrNull
+# kotlin.UByteArray.get(Int) -> use getOrNull
+# kotlin.ULongArray.get(Int) -> use getOrNull
+# kotlin.UIntArray.get(Int) -> use getOrNull
+# kotlin.UShortArray.get(Int) -> use getOrNull
+# kotlin.String.get(Int) -> use getOrNull
+
+# Iterable
+kotlin.collections.first() -> use firstOrNull
+kotlin.collections.first(*) -> use firstOrNull
+kotlin.collections.last() -> use lastOrNull
+kotlin.collections.last(*) -> use lastOrNull
+kotlin.collections.random() -> use randomOrNull
+kotlin.collections.random(*) -> use randomOrNull
+kotlin.collections.max() -> use maxOrNull
+kotlin.collections.min() -> use minOrNull
+kotlin.collections.maxBy(*) -> use maxByOrNull
+kotlin.collections.minBy(*) -> use minByOrNull
+kotlin.collections.maxOf(*) -> use maxOfOrNull
+kotlin.collections.maxOfWith(*,*) -> use maxOfWithOrNull
+kotlin.collections.single() -> use singleOrNull
+
+# Sequence
+kotlin.sequences.first() -> use firstOrNull
+kotlin.sequences.first(*) -> use firstOrNull
+kotlin.sequences.last() -> use lastOrNull
+kotlin.sequences.last(*) -> use lastOrNull
+kotlin.sequences.random() -> use randomOrNull
+kotlin.sequences.random(*) -> use randomOrNull
+kotlin.sequences.max() -> use maxOrNull
+kotlin.sequences.min() -> use minOrNull
+kotlin.sequences.maxBy(*) -> use maxByOrNull
+kotlin.sequences.minBy(*) -> use minByOrNull
+kotlin.sequences.maxOf(*) -> use maxOfOrNull
+kotlin.sequences.maxOfWith(*,*) -> use maxOfWithOrNull
+kotlin.sequences.single() -> use singleOrNull
+
+# Ranges TODO
+
+# Strings and CharSequence
+kotlin.text.elementAt(Int) -> use elementAtOrNull
+kotlin.text.first() -> use firstOrNull
+kotlin.text.last() -> use lastOrNull
+kotlin.text.random() -> use randomOrNull
+kotlin.text.random(*) -> use randomOrNull
+kotlin.text.single() -> use singleOrNull
+
+kotlin.text.max() -> use maxOrNull
+kotlin.text.min() -> use minOrNull
+kotlin.text.maxBy(*) -> use maxByOrNull
+kotlin.text.minBy(*) -> use minByOrNull
+kotlin.text.maxOf(*) -> use maxOfOrNull
+kotlin.text.maxOfWith(*,*) -> use maxOfWithOrNull
+kotlin.text.toBoolean() -> use toBooleanLenient or toBooleanStrictOrNull
+kotlin.text.toInt() -> use toIntOrNull
+kotlin.text.toBigDecimal() -> use toBigDecimalOrNull
+kotlin.text.toBigInteger() -> use toBigIntegerOrNull
+kotlin.text.toByte() -> use toByteOrNull
+kotlin.text.toDouble() -> use toDoubleOrNull
+kotlin.text.toFloat() -> use toFloatOrNull
+kotlin.text.toShort() -> use toShortOrNull
+kotlin.text.toUByte() -> use toUByteOrNull
+kotlin.text.toULong() -> use toULongOrNull
+kotlin.text.toUInt() -> use toUIntOrNull
+kotlin.text.toUShort() -> use toUIntOrNull

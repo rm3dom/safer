@@ -1,0 +1,3 @@
+kotlinx.coroutines.flow.first() -> use firstOrNull
+kotlinx.coroutines.flow.first(*) -> use firstOrNull
+kotlinx.coroutines.flow.last() -> use lastOrNull

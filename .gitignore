@@ -1,0 +1,22 @@
+**/BuildInfo.kt
+
+# Ignore Gradle project-specific cache directory
+.gradle/
+build/
+node_modules/
+kotlin-js-store/
+.terraform/
+data/
+local.properties
+.kotlin/
+.DS_Store
+.idea/
+cmake-build-*/
+*.iws
+out/
+.idea_modules/
+atlassian-ide-plugin.xml
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
