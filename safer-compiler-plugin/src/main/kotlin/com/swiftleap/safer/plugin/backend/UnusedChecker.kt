@@ -91,7 +91,7 @@ internal class UnusedChecker(session: FirSession) : FirAdditionalCheckersExtensi
             annot.fqName(session)?.let { fqName ->
                 //TODO do not map the annotations when we do not need to
                 val args = annot.argumentMapping.mapping
-                    .map { it.key.toString() to (it.value as? FirLiteralExpression<*>)?.value?.toString() }
+                    .map { it.key.toString() to (it.value as? FirLiteralExpression)?.value?.toString() }
                     .toMap()
                 checkAnnotations.anyMatch(fqName, args)
             } == true
