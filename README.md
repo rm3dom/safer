@@ -81,9 +81,13 @@ safer {
 
 ## Compatibility matrix
 
-| Kotlin | Gradle    | Safer               |
-|--------|-----------|---------------------|
-| 2.1.20 | 8.2 +     | 2.1.20-0.2-SNAPSHOT |
+| Kotlin | Gradle | Safer               |
+|--------|--------|---------------------|
+| 2.1.20 | 8.2 +  | 2.1.20-0.2-SNAPSHOT |
+| 2.1.0  | 8.2 +  | 2.1.0-0.2-SNAPSHOT  |
+| 2.0.21 | 8.2 +  | 2.0.21-0.2-SNAPSHOT |
+| 2.0.10 | 8.2 +  | 2.0.10-0.2-SNAPSHOT |
+| 2.0.0  | 8.2 +  | 2.0.0-0.2-SNAPSHOT  |
 
 **Note:** The above is a guideline, and it may work perfectly fine with earlier versions of Gradle.
 
