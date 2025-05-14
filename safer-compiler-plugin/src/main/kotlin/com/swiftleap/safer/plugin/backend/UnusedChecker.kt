@@ -22,7 +22,6 @@ import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirSingleExpressionBlock
 import org.jetbrains.kotlin.fir.references.toResolvedFunctionSymbol
 import org.jetbrains.kotlin.fir.resolve.fqName
-import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.types.*
 
@@ -92,7 +91,7 @@ internal class UnusedChecker(session: FirSession) : FirAdditionalCheckersExtensi
             annot.fqName(session)?.let { fqName ->
                 //TODO do not map the annotations when we do not need to
                 val args = annot.argumentMapping.mapping
-                    .map { it.key.toString() to (it.value as? FirLiteralExpression)?.value?.toString() }
+                    .map { it.key.toString() to (it.value as? FirLiteralExpression<*>)?.value?.toString() }
                     .toMap()
                 checkAnnotations.anyMatch(fqName, args)
             } == true
