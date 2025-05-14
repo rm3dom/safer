@@ -67,7 +67,7 @@ Add the plugin to your project by including it in your `build.gradle.kts` file:
 ```kotlin
 plugins {
     kotlin("multiplatform")
-    id("com.swiftleap.safer") version "2.1.20-0.1-SNAPSHOT"  // Match with your Kotlin version
+    id("com.swiftleap.safer") version "2.1.20-0.2-SNAPSHOT"  // Match with your Kotlin version
 }
 
 repositories {
@@ -81,9 +81,9 @@ safer {
 
 ## Compatibility matrix
 
-| Kotlin | Gradle    | Safer                |
-|--------|-----------|----------------------|
-| 2.1.20 | 8.2 +     | 2.1.20-0.1-SNAPSHOT  |
+| Kotlin | Gradle    | Safer               |
+|--------|-----------|---------------------|
+| 2.1.20 | 8.2 +     | 2.1.20-0.2-SNAPSHOT |
 
 **Note:** The above is a guideline, and it may work perfectly fine with earlier versions of Gradle.
 
