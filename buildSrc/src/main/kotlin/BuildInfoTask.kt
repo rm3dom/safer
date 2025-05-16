@@ -73,6 +73,8 @@ open class BuildInfoTask : DefaultTask() {
     fun run() {
         require(packageName.get().isNotBlank()) { "packageName must be set" }
 
+        //TODO write to build/generated
+
         // Find the source folder
         val sourceFolder = listOf("src/commonMain/kotlin", "src/jvmMain/kotlin", "src/main/kotlin")
             .map { project.layout.projectDirectory.dir(it) }

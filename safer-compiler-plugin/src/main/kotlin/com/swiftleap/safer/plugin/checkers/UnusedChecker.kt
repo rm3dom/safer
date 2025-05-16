@@ -1,4 +1,4 @@
-package com.swiftleap.safer.plugin.backend
+package com.swiftleap.safer.plugin.checkers
 
 import com.swiftleap.safer.plugin.*
 import org.jetbrains.annotations.Contract

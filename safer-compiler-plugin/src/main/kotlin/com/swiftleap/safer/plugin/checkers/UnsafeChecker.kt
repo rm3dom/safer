@@ -1,4 +1,4 @@
-package com.swiftleap.safer.plugin.backend
+package com.swiftleap.safer.plugin.checkers
 
 import com.swiftleap.safer.plugin.PluginConfiguration
 import com.swiftleap.safer.plugin.TestEvent
@@ -75,7 +75,7 @@ internal class UnsafeChecker(session: FirSession) : FirAdditionalCheckersExtensi
 
             reporter.reportOn(
                 expression.source,
-                if (PluginConfiguration.unsafeWarnAsError) Errors.UNUSED_ERROR else Errors.UNUSED_WARNING,
+                if (PluginConfiguration.unsafeWarnAsError) Errors.UNSAFE_ERROR else Errors.UNSAFE_WARNING,
                 expression as FirExpression,
                 match.message ?: "use a safe alternative instead",
                 context
@@ -103,17 +103,17 @@ internal class UnsafeChecker(session: FirSession) : FirAdditionalCheckersExtensi
         /**
          * Warning diagnostic for unsafe function usage.
          */
-        val UNUSED_WARNING by warning2<PsiElement, FirExpression, String>()
+        val UNSAFE_WARNING by warning2<PsiElement, FirExpression, String>()
 
         /**
          * Error diagnostic for unsafe function usage.
          * Used when configured to treat warnings as errors.
          */
-        val UNUSED_ERROR by error2<PsiElement, FirExpression, String>()
+        val UNSAFE_ERROR by error2<PsiElement, FirExpression, String>()
 
         init {
             FirErrorsDefaultMessages.MAP.put(
-                UNUSED_WARNING,
+                UNSAFE_WARNING,
                 "Unsafe function ''{0}'', ''{1}''.",
                 FirDiagnosticRenderers.CALLEE_NAME,
                 CommonRenderers.STRING
@@ -122,7 +122,7 @@ internal class UnsafeChecker(session: FirSession) : FirAdditionalCheckersExtensi
 
         init {
             FirErrorsDefaultMessages.MAP.put(
-                UNUSED_ERROR,
+                UNSAFE_ERROR,
                 "Unsafe function ''{0}'', ''{1}''.",
                 FirDiagnosticRenderers.CALLEE_NAME,
                 CommonRenderers.STRING

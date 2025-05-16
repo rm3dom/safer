@@ -26,10 +26,7 @@ subprojects {
         else -> project.name
     } + ". Better safe than, sorry."
 
-    version = when (project.name) {
-        "safer-annotations" -> saferVersion
-        else -> "$kotlinVersion-${saferVersion}"
-    }
+    version = "$kotlinVersion-${saferVersion}"
 
     repositories {
         mavenCentral()

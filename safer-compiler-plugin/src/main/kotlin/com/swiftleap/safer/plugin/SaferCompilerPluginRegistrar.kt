@@ -1,10 +1,12 @@
-package com.swiftleap.safer.plugin.frontend
+package com.swiftleap.safer.plugin
 
-import com.swiftleap.safer.plugin.*
-import com.swiftleap.safer.plugin.backend.UnsafeChecker
-import com.swiftleap.safer.plugin.backend.UnusedChecker
+import com.swiftleap.safer.plugin.checkers.UnsafeChecker
+import com.swiftleap.safer.plugin.checkers.UnusedChecker
+import org.jetbrains.kotlin.backend.common.toLogger
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
+import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
@@ -33,24 +35,25 @@ internal class SaferCompilerPluginRegistrar : CompilerPluginRegistrar() {
      * then registers the appropriate FIR extensions based on the plugin configuration.
      *
      * @param configuration The compiler configuration
-     * @throws SaferException If the Kotlin version is incompatible with the plugin
      */
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        System.err.println("Registering Safer compiler plugin")
+        val messageCollector = configuration.get(CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
+        val logger = messageCollector.toLogger()
 
         if (!PluginConfiguration.unusedEnabled
             && !PluginConfiguration.unsafeEnabled
-        )
-            return
+        ) return
+
+        logger.log("Safer plugin registered")
 
         if (KotlinVersion.CURRENT.toString() != BuildInfo.kotlinVersion) {
-            val subVersion = BuildInfo.projectVersion.split("-", limit = 2).getOrNull(1)
-            throw SaferException(
+            logger.warning(
                 """
                 Safer compiler plugin requires Kotlin version ${BuildInfo.kotlinVersion} but ${KotlinVersion.CURRENT} was found.
-                Update your build script to use the correct version of Safer.
+                This could break your build.
+                Update your build script to use the correct version of Kotlin or log an issue if none is available:
                 plugins {
-                    id("com.swiftleap.safer") version "${KotlinVersion.CURRENT}-${subVersion}"
+                    id("com.swiftleap.safer") version "${KotlinVersion.CURRENT}-{compatible.safer.version}"
                 }
                 """.trimIndent()
             )
