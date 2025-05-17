@@ -11,5 +11,6 @@ rootProject.name = "safer"
 
 include(
     ":safer-compiler-plugin",
-    ":safer-gradle-plugin"
+    ":safer-gradle-plugin",
+    ":safer-maven-plugin"
 )
