@@ -11,10 +11,6 @@ kotlin {
 
 val buildTool = stringProperty("safer.buildTool", "")
 
-require(buildTool in listOf("maven", "gradle")) {
-    "safer.buildTool must be one of maven, gradle, but was '$buildTool' instead."
-}
-
 dependencies {
     if (buildTool == "maven")
         compileOnly(libs.kotlin.compiler)
@@ -26,7 +22,7 @@ dependencies {
 }
 
 tasks.create("rewrite-types") {
-    //Pairs of "compiler" to "compiler-embeddable" strings
+    //Pairs of "kotlin-compiler" to "kotlin-compiler-embeddable" strings
     val pairs = listOf(
         "import com.intellij.psi.PsiElement" to "import org.jetbrains.kotlin.com.intellij.psi.PsiElement"
     )
@@ -54,6 +50,20 @@ tasks.create("rewrite-types") {
 tasks.compileKotlin {
     dependsOn("rewrite-types")
 }
+
+// Safer compiler plugin must be published with kotlin-compiler-embeddable and NOT kotlin-compiler
+val validatePublish = tasks.create("validate-publish") {
+    doFirst {
+        if(buildTool != "gradle")
+            error("""
+                #################################################
+                Publish disabled, use -P "safer.buildTool=gradle"
+                #################################################
+            """.trimIndent())
+    }
+}
+
+tasks.publish {dependsOn(validatePublish)}
 
 publishing {
     publications {

@@ -19,20 +19,19 @@ dependencies {
     compileOnly(libs.maven.core)
 }
 
+// Maven plugin must be built and published with kotlin-compiler and NOT kotlin-compiler-embeddable
 val validateBuild = tasks.create("validate-build") {
     doFirst {
         if(buildTool != "maven")
             error("""
-                ######################################################
-                Maven build disabled, please set -P "safer.buildTool=maven"
-                ######################################################
+                ####################################################
+                Maven build disabled, use -P "safer.buildTool=maven"
+                ####################################################
             """.trimIndent())
     }
 }
 
-tasks.shadowJar { dependsOn(validateBuild) }
 tasks.compileKotlin { dependsOn(validateBuild) }
-
 tasks.publish {
     dependsOn(validateBuild, tasks.shadowJar)
 }

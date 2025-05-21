@@ -12,13 +12,18 @@ plugins {
 val enablePublishing = boolProperty("safer.publish", false)
 val kotlinVersion = libs.versions.kotlin.get()
 val saferVersion = stringProperty("safer.version", "0.1")
+val buildTool = stringProperty("safer.buildTool", "")
 
-tasks.create("build-gradle-plugin") {
-    dependsOn(":safer-compiler-plugin:clean", ":safer-compiler-plugin:build", ":safer-gradle-plugin:build")
+require(buildTool in listOf("maven", "gradle")) {
+    "safer.buildTool must be one of maven, gradle, but was '$buildTool' instead."
 }
 
-tasks.create("build-maven-plugin") {
-    dependsOn(":safer-compiler-plugin:clean", ":safer-compiler-plugin:assemble", ":safer-maven-plugin:shadowJar")
+tasks.create("gradle-dev-publish") {
+    dependsOn(":safer-compiler-plugin:publishToMavenLocal", ":safer-gradle-plugin:publishToMavenLocal")
+}
+
+tasks.create("maven-dev-publish") {
+    dependsOn(":safer-maven-plugin:publishToMavenLocal")
 }
 
 subprojects {
@@ -30,6 +35,7 @@ subprojects {
 
     description = when (project.name) {
         "safer-gradle-plugin" -> "Safer Gradle plugin"
+        "safer-maven-plugin" -> "Safer Maven plugin"
         "safer-compiler-plugin" -> "Safer compiler plugin"
         else -> project.name
     } + ". Better safe than, sorry."

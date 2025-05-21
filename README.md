@@ -259,14 +259,13 @@ Also, see the library checks [here.](safer-compiler-plugin/src/main/resources)
 
 ## Building from Source
 
-To build the plugin from source:
+To build the plugin from source, clone the repository, then run any of the following:
 
-Clone the repository, then run one of the following:
 * `./gradlew -P "safer.buildTool=gradle" :safer-compiler-plugin:test`
-* `./gradlew -P "safer.buildTool=gradle" :safer-gradle-plugin:build`
-* `./gradlew -P "safer.buildTool=maven" :safer-maven-plugin:build`
-* `./gradlew -P "safer.buildTool=gradle" :safer-gradle-plugin:publishToMavenLocal`
-* `./gradlew -P "safer.buildTool=maven" :safer-maven-plugin:publishToMavenLocal`
+* `./gradlew -P "safer.buildTool=gradle" :gradle-dev-publish`
+* `./gradlew -P "safer.buildTool=maven" :maven-dev-publish`
+
+All tasks must be run with `-P "safer.buildTool=maven|gradle"`
 
 ## License
 
