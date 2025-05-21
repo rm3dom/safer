@@ -1,5 +1,18 @@
 import org.gradle.api.Project
 
 
-fun Project.boolProperty(name: String, default: Boolean): Boolean = property(name)?.toString()?.toBoolean() ?: default
-fun Project.stringProperty(name: String, default: String): String = property(name)?.toString() ?: default
+fun Project.stringProperty(name: String, default: String): String {
+    val prop = try {
+        property(name)
+    } catch (_: Exception) {
+        null
+    }
+    return prop?.toString()
+        ?: System.getProperty(name)
+        ?: System.getenv(name)
+        ?: default
+}
+
+
+fun Project.boolProperty(name: String, default: Boolean): Boolean =
+    stringProperty(name, default.toString()).toBoolean()

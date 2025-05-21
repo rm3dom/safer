@@ -7,7 +7,11 @@ import org.codehaus.plexus.logging.*
 import org.jetbrains.kotlin.maven.*
 
 
-@Component(role = KotlinMavenPluginExtension::class, hint = "safer")
+@Component(
+    role = KotlinMavenPluginExtension::class,
+    hint = "com.swiftleap.safer",
+    version = BuildInfo.projectVersion,
+)
 class SaverMavenPluginExtension : KotlinMavenPluginExtension {
     @Requirement
     lateinit var logger: Logger

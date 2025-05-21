@@ -1,5 +1,6 @@
 package com.swiftleap.safer.plugin
 
+import com.swiftleap.safer.BuildInfo
 import com.swiftleap.safer.plugin.checkers.UnsafeChecker
 import com.swiftleap.safer.plugin.checkers.UnusedChecker
 import org.jetbrains.kotlin.backend.common.toLogger

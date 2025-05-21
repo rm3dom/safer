@@ -1,5 +1,6 @@
 package com.swiftleap.safer.plugin
 
+import com.swiftleap.safer.BuildInfo
 import org.jetbrains.annotations.Contract
 import org.jetbrains.kotlin.cli.common.toBooleanLenient
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption

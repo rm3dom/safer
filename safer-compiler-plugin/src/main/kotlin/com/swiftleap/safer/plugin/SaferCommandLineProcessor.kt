@@ -1,5 +1,6 @@
 package com.swiftleap.safer.plugin
 
+import com.swiftleap.safer.BuildInfo
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOptionProcessingException
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor

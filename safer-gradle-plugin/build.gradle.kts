@@ -11,6 +11,7 @@ kotlin {
 }
 
 dependencies {
+    compileOnly(project(":safer-compiler-plugin"))
     compileOnly(libs.kotlin.gradle.plugin.api)
 }
 
@@ -38,8 +39,3 @@ gradlePlugin {
         }
     }
 }
-
-generateBuildInfo(
-    "com.swiftleap.safer",
-    BuildProp("compilerPluginName", project(":safer-compiler-plugin").name)
-)

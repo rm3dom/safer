@@ -6,21 +6,34 @@
 Safer is a Kotlin compiler plugin focused on enhancing code safety by ensuring return values are used and that
 potentially unsafe function calls are made explicitly.
 
-**But why?**
+Another way of thinking of Safer is, it's a 'mass deprecation' tool and check return linter. 
+With Safer you can "annotate" third party libraries and make them a little Safer to use.
+
+## But why?
 
 I have a condition called being a parent, so I have a foggy brain, and stupid little annoying bugs slip into my code
 because safety is not the number one concern for Kotlin. (Which is fair, Kotlin has to solve many problems on many
 targets).
 
 I used to use [Elm](https://elm-lang.org/) a lot and a little Rust, but it's mostly Kotlin because memory and startup
-times are not really a concern in my applications. Code reuse and multiplatform are most important in my use-cases. 
+times are not really a concern in my applications. Multiplatform and code reuse are most important in my use-cases.
 What I like about those languages is their safety; especially Elm, zero runtime errors in Elm.
+
+**Example 1:**
 
 I use sealed classes for error handling, but the compiler does not enforce its usage. I also hate the fact that I have
 to annotate all my functions with `@CheckReturnValue` or `@Contract(pure=true)`. Ideally, I can just annotate my
-boxed Error type, and all functions that return that type are automatically checked.
+boxed or sealed type, and all functions that return that type are automatically checked:
 
-**Example 1:**
+```kotlin
+@CheckReturnValue
+sealed interface MyResultType {
+   object Ok : MyResultType
+   //....
+}
+```
+
+**Example 2:**
 
 Consider the ambiguity in this common Kotlin code:
 
@@ -41,11 +54,11 @@ val list = listOf(1234)
 list.getOrNull(i) ?: return outOfBoundsError("Postal code") //or throw if you really must, at-least it's explicit
 ```
 
-While Safer aims for even better solutions through deeper analysis, Safer currently prioritizes explicit safety (
-inspired by [Elm](https://elm-lang.org/)).
+While Safer aims for even better solutions through deeper analysis, Safer currently prioritizes explicit safety 
+inspired by Elm.
 Note that primitive array indexing is not reported due to boxing.
 
-**Example 2:**
+**Example 3:**
 
 ```kotlin
 File("").mkdirs()
@@ -83,11 +96,11 @@ safer {
 
 | Kotlin | Gradle | Safer               |
 |--------|--------|---------------------|
-| 2.1.20 | 8.2 +  | 2.1.20-0.2-SNAPSHOT |
-| 2.1.0  | 8.2 +  | 2.1.0-0.2-SNAPSHOT  |
-| 2.0.21 | 8.2 +  | 2.0.21-0.2-SNAPSHOT |
-| 2.0.10 | 8.2 +  | 2.0.10-0.2-SNAPSHOT |
-| 2.0.0  | 8.2 +  | 2.0.0-0.2-SNAPSHOT  |
+| 2.1.20 | 8.3 +  | 2.1.20-0.3-SNAPSHOT |
+| 2.1.0  | 8.3 +  | 2.1.0-0.3-SNAPSHOT  |
+| 2.0.21 | 8.3 +  | 2.0.21-0.3-SNAPSHOT |
+| 2.0.10 | 8.3 +  | 2.0.10-0.3-SNAPSHOT |
+| 2.0.0  | 8.3 +  | 2.0.0-0.3-SNAPSHOT  |
 
 **Note:** The above is a guideline, and it may work perfectly fine with earlier versions of Gradle.
 
@@ -159,7 +172,8 @@ safer {
         // Check Java SDK functions (in a kotlin context)
         checkJavaExperimental()
 
-        // Add custom signatures to check (or contribute to Safer and add checks for your libraries)
+        // Add custom signatures to check 
+        // (or contribute to Safer and add checks for your libraries)
         checkSignatures(
             "java.io.File.mkdir()",
             "kotlin.Result",
@@ -185,7 +199,8 @@ safer {
         // Check Java SDK functions (in a kotlin context)
         checkJavaExperimental()
 
-        // Add custom signatures to check (or contribute to Safer and add checks for your libraries)
+        // Add custom signatures to check 
+        // (or contribute to Safer and add checks for your libraries)
         checkSignatures(
             "kotlin.collections.max()",
             "java.util.Hashtable.get(*)",
@@ -240,14 +255,18 @@ Here are some examples of valid signatures:
 "kotlin.text.replaceFirst(*, *)"
 ```
 
-Also, see the library checks [here.](safer-compiler-plugin/src/main/resources)
+Also, see the library checks [here.](safer-compiler-plugin/src/main/resources)  
 
 ## Building from Source
 
 To build the plugin from source:
 
-1. Clone the repository
-2. Run `./gradlew build`
+Clone the repository, then run one of the following:
+* `./gradlew -P "safer.buildTool=gradle" :safer-compiler-plugin:test`
+* `./gradlew -P "safer.buildTool=gradle" :safer-gradle-plugin:build`
+* `./gradlew -P "safer.buildTool=maven" :safer-maven-plugin:build`
+* `./gradlew -P "safer.buildTool=gradle" :safer-gradle-plugin:publishToMavenLocal`
+* `./gradlew -P "safer.buildTool=maven" :safer-maven-plugin:publishToMavenLocal`
 
 ## License
 

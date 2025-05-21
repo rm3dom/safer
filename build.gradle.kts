@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.nio.file.Paths
 
 
 plugins {
@@ -8,10 +9,17 @@ plugins {
     kotlin("multiplatform") apply false
 }
 
-val enablePublishing = boolProperty("enablePublishing", false)
+val enablePublishing = boolProperty("safer.publish", false)
 val kotlinVersion = libs.versions.kotlin.get()
-val saferVersion = stringProperty("saferVersionVersion", "0.1")
+val saferVersion = stringProperty("safer.version", "0.1")
 
+tasks.create("build-gradle-plugin") {
+    dependsOn(":safer-compiler-plugin:clean", ":safer-compiler-plugin:build", ":safer-gradle-plugin:build")
+}
+
+tasks.create("build-maven-plugin") {
+    dependsOn(":safer-compiler-plugin:clean", ":safer-compiler-plugin:assemble", ":safer-maven-plugin:shadowJar")
+}
 
 subprojects {
     apply(plugin = "maven-publish")
@@ -45,12 +53,17 @@ subprojects {
         options.release.set(8)
     }
 
+    generateBuildInfo(
+        "com.swiftleap.safer",
+        BuildProp("compilerPluginName", project(":safer-compiler-plugin").name),
+        BuildProp("kotlinVersion", kotlinVersion)
+    )
+
     val repositoryUrl = if (version.toString().endsWith("SNAPSHOT")) {
         "https://central.sonatype.com/repository/maven-snapshots/"
     } else {
         "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
     }
-
 
     publishing {
         publications {
@@ -113,5 +126,4 @@ subprojects {
             sign(publishing.publications["mavenJava"])
         }
     }
-
 }
