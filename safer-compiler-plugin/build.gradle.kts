@@ -1,13 +1,7 @@
 plugins {
-    kotlin("jvm")
-    `java-library`
+    id("safer-plugin.conventions")
 }
 
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    }
-}
 
 val buildTool = stringProperty("safer.buildTool", "")
 
@@ -51,24 +45,4 @@ tasks.compileKotlin {
     dependsOn("rewrite-types")
 }
 
-// Safer compiler plugin must be published with kotlin-compiler-embeddable and NOT kotlin-compiler
-val validatePublish = tasks.create("validate-publish") {
-    doFirst {
-        if(buildTool != "gradle")
-            error("""
-                #################################################
-                Publish disabled, use -P "safer.buildTool=gradle"
-                #################################################
-            """.trimIndent())
-    }
-}
-
-tasks.publish {dependsOn(validatePublish)}
-
-publishing {
-    publications {
-        named<MavenPublication>("mavenJava") {
-            from(components["java"])
-        }
-    }
-}
+requiresBuildTool("gradle")

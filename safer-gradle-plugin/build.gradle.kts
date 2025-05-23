@@ -1,26 +1,13 @@
+
 plugins {
-    kotlin("jvm")
+    id("safer-plugin.conventions")
     `java-gradle-plugin`
     alias(libs.plugins.gradle.plugin.publish)
-}
-
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    }
 }
 
 dependencies {
     compileOnly(project(":safer-compiler-plugin"))
     compileOnly(libs.kotlin.gradle.plugin.api)
-}
-
-publishing {
-    publications {
-        named<MavenPublication>("mavenJava") {
-            from(components["java"])
-        }
-    }
 }
 
 gradlePlugin {
@@ -39,3 +26,5 @@ gradlePlugin {
         }
     }
 }
+
+requiresBuildTool("gradle")

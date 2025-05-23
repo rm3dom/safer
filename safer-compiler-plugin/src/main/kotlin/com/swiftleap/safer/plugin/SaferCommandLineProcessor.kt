@@ -1,6 +1,7 @@
 package com.swiftleap.safer.plugin
 
 import com.swiftleap.safer.BuildInfo
+import com.swiftleap.safer.compilerProjectId
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOptionProcessingException
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
@@ -20,7 +21,7 @@ internal class SaferCommandLineProcessor : CommandLineProcessor {
      * The unique identifier for this plugin.
      * Used by the Kotlin compiler to identify this plugin.
      */
-    override val pluginId: String = BuildInfo.projectId
+    override val pluginId: String = BuildInfo.compilerProjectId
 
     /**
      * List of command line options supported by this plugin.

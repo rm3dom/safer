@@ -12,12 +12,12 @@ With Safer you can "annotate" third party libraries and make them a little Safer
 ## But why?
 
 I have a condition called being a parent, so I have a foggy brain, and stupid little annoying bugs slip into my code
-because safety is not the number one concern for Kotlin. (Which is fair, Kotlin has to solve many problems on many
-targets).
+~~because safety is not the number one concern for Kotlin. (Which is fair, Kotlin has to solve many problems on many
+targets)~~ (Will be fixed in the up-coming Rich Errors changes in Kotlin).
 
 I used to use [Elm](https://elm-lang.org/) a lot and a little Rust, but it's mostly Kotlin because memory and startup
 times are not really a concern in my applications. Multiplatform and code reuse are most important in my use-cases.
-What I like about those languages is their safety; especially Elm, zero runtime errors in Elm.
+What I like about those languages is their safety; especially Elm, zero runtime errors, or panics, in Elm.
 
 **Example 1:**
 
@@ -158,10 +158,10 @@ safer {
     // Configure unused return value checking
     unused {
         // Enable or disable the feature (default: true)
-        enabled(true)
+        enabled = true
 
         // Treat warnings as errors (default: false)
-        warnAsError(false)
+        warnAsError = false
 
         // Check Kotlin standard library functions
         checkKotlinStdLib()
@@ -185,10 +185,10 @@ safer {
     // Configure unsafe function detection
     unsafe {
         // Enable or disable the feature (default: true)
-        enabled(true)
+        enabled = true
 
         // Treat warnings as errors (default: false)
-        warnAsError(false)
+        warnAsError = false
 
         // Check Kotlin standard library functions
         checkKotlinStdLib()
