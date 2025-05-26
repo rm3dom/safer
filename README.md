@@ -13,7 +13,7 @@ With Safer you can "annotate" third party libraries and make them a little Safer
 
 I have a condition called being a parent, so I have a foggy brain, and stupid little annoying bugs slip into my code
 ~~because safety is not the number one concern for Kotlin. (Which is fair, Kotlin has to solve many problems on many
-targets)~~ (Will be fixed in the up-coming Rich Errors changes in Kotlin).
+targets)~~ (Kotlin will be much safer in upcoming versions and will include things like Rich Errors, making Safer less useful).
 
 I used to use [Elm](https://elm-lang.org/) a lot and a little Rust, but it's mostly Kotlin because memory and startup
 times are not really a concern in my applications. Multiplatform and code reuse are most important in my use-cases.
@@ -73,7 +73,7 @@ You can adopt and later remove Safer without impacting your core code.
 Leave it as a warning and enable errors per library as you go.
 Use it alongside your other favorite linters, Safer is not aiming to replace any of them.
 
-## Installation
+## Gradle Installation
 
 Add the plugin to your project by including it in your `build.gradle.kts` file:
 
@@ -92,17 +92,45 @@ safer {
 }
 ```
 
+## Maven Installation
+
+Add Safer to your kotlin maven build plugin: 
+
+```xml
+<plugin>
+    <groupId>org.jetbrains.kotlin</groupId>
+    <artifactId>kotlin-maven-plugin</artifactId>
+    <version>${kotlin.version}</version>
+    <!-- ... -->
+    <configuration>
+        <compilerPlugins>
+            <plugin>com.swiftleap.safer</plugin>
+        </compilerPlugins>
+        <pluginOptions>
+            <!-- see Safer Maven Configuration below -->
+        </pluginOptions>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>com.swiftleap</groupId>
+            <artifactId>safer-maven-plugin</artifactId>
+            <version>${kotlin.version}-${safer.version}</version>
+        </dependency>
+    </dependencies>
+</plugin>
+```
+
 ## Compatibility matrix
 
-| Kotlin | Gradle | Safer               |
-|--------|--------|---------------------|
-| 2.1.20 | 8.3 +  | 2.1.20-0.3-SNAPSHOT |
-| 2.1.0  | 8.3 +  | 2.1.0-0.3-SNAPSHOT  |
-| 2.0.21 | 8.3 +  | 2.0.21-0.3-SNAPSHOT |
-| 2.0.10 | 8.3 +  | 2.0.10-0.3-SNAPSHOT |
-| 2.0.0  | 8.3 +  | 2.0.0-0.3-SNAPSHOT  |
+| Kotlin | Gradle | Maven | Safer               |
+|--------|--------|-------|---------------------|
+| 2.1.20 | 8.3 +  | 3+    | 2.1.20-0.3-SNAPSHOT |
+| 2.1.0  | 8.3 +  | 3+    | 2.1.0-0.3-SNAPSHOT  |
+| 2.0.21 | 8.3 +  | 3+    | 2.0.21-0.3-SNAPSHOT |
+| 2.0.10 | 8.3 +  | 3+    | 2.0.10-0.3-SNAPSHOT |
+| 2.0.0  | 8.3 +  | 3+    | 2.0.0-0.3-SNAPSHOT  |
 
-**Note:** The above is a guideline, and it may work perfectly fine with earlier versions of Gradle.
+**Note:** The above is a guideline, and it may work perfectly fine with earlier/later versions of Gradle and Maven.
 
 ## Usage
 
@@ -149,7 +177,7 @@ val item = list.getOrNull(index) ?: defaultValue
 
 **Note:** warnings are only reported when there exists a safer alternative for an unsafe function.
 
-## Configuration
+## Gradle Configuration
 
 Configure the plugin in your `build.gradle.kts` file:
 
@@ -208,6 +236,36 @@ safer {
     }
 }
 ```
+
+## Maven Configuration
+
+```xml
+ <configuration>
+     <compilerPlugins>
+         <plugin>com.swiftleap.safer</plugin>
+     </compilerPlugins>
+     <pluginOptions>
+         <option>com.swiftleap.safer:unusedEnabled=true</option>
+         <option>com.swiftleap.safer:unusedWarnAsError=false</option>
+         <option>com.swiftleap.safer:unusedPresetLibs="kotlin-stdlib; kotlin-coroutines; java</option>
+         <!--
+         Add custom signatures to check separated by a ';'. 
+         (or contribute to Safer and add checks for your libraries as a preset lib) 
+         -->
+         <option>com.swiftleap.safer:unusedSignatures="kotlin.Result; java.util.Optional"</option>
+         <option>com.swiftleap.safer:unsafeEnabled=true</option>
+         <option>com.swiftleap.safer:unsafeWarnAsError=false</option>
+         <!--
+         Add custom signatures to check separated by a ';'. 
+         (or contribute to Safer and add checks for your libraries as a preset lib)
+         -->
+         <option>com.swiftleap.safer:unsafeSignatures="kotlin.collections.max();java.util.Hashtable.get(*)"</option>
+         <option>com.swiftleap.safer:unsafePresetLibs="kotlin-stdlib; kotlin-coroutines; java"</option>
+     </pluginOptions>
+ </configuration>
+```
+
+**Note:** An option may not contain a newline within, but surrounding whitespace is allowed. Your IDE may add new lines when formatting.
 
 ## Configuring Signatures
 

@@ -45,6 +45,16 @@
                     <compilerPlugins>
                         <plugin>com.swiftleap.safer</plugin>
                     </compilerPlugins>
+                    <pluginOptions>
+                        <option>com.swiftleap.safer:unusedEnabled=true</option>
+                        <option>com.swiftleap.safer:unusedWarnAsError=false</option>
+                        <option>com.swiftleap.safer:unusedSignatures="java.util.Optional"</option>
+                        <option>com.swiftleap.safer:unusedPresetLibs="kotlin-stdlib; kotlin-coroutines</option>
+                        <option>com.swiftleap.safer:unsafeEnabled=true</option>
+                        <option>com.swiftleap.safer:unsafeWarnAsError=false</option>
+                        <option>com.swiftleap.safer:unsafeSignatures="kotlin.collections.max();java.util.Hashtable.get(*)"</option>
+                        <option>com.swiftleap.safer:unsafePresetLibs="kotlin-stdlib; kotlin-coroutines; java"</option>
+                    </pluginOptions>
                 </configuration>
                 <dependencies>
                     <dependency>

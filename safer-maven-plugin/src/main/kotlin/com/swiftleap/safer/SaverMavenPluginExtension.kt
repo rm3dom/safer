@@ -6,7 +6,6 @@ import org.codehaus.plexus.component.annotations.*
 import org.codehaus.plexus.logging.*
 import org.jetbrains.kotlin.maven.*
 
-
 @Component(
     role = KotlinMavenPluginExtension::class,
     hint = "com.swiftleap.safer",

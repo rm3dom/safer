@@ -14,7 +14,7 @@ interface SaferConfigurationSpec {
     val unsafePresetLibs: Set<String>
 
     companion object {
-        const val SEPERATOR = "&"
+        const val SEPERATOR = ";"
     }
 }
 
