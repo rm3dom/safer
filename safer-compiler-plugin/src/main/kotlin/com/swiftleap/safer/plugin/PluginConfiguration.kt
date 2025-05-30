@@ -1,41 +1,40 @@
 package com.swiftleap.safer.plugin
 
+import com.swiftleap.safer.SaferConfigurationSpec
+import com.swiftleap.safer.toPluginConfigSet
 import org.jetbrains.annotations.Contract
 import org.jetbrains.kotlin.cli.common.toBooleanLenient
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
-import kotlin.reflect.KProperty0
 
 
 /**
  * Global configuration for the plugin. This object stores the configuration of the plugin. It should only be mutated
  * during the command line processing.
  */
-internal object PluginConfiguration {
-    const val SEPERATOR = "&"
-
+internal object PluginConfiguration : SaferConfigurationSpec {
     /**
      * Controls whether the unused return value checking is enabled.
      * Default is true.
      */
-    var unusedEnabled: Boolean = true
+    override var unusedEnabled: Boolean = true
 
     /**
      * Controls whether unused return value warnings should be treated as errors.
      * Default is false.
      */
-    var unusedWarnAsError: Boolean = false
+    override var unusedWarnAsError: Boolean = false
 
     /**
      * Set of signature strings for functions or types that should have their return values used.
      * These are user-provided signatures.
      */
-    var unusedSignatures: Set<String> = setOf()
+    override var unusedSignatures: Set<String> = setOf()
 
     /**
      * Set of preset library names to load unused signatures from.
      * Default includes the "default" preset.
      */
-    var unusedPresetLibs: Set<String> = setOf("default")
+    override var unusedPresetLibs: Set<String> = setOf("default")
 
     /**
      * Loads and parses all unused signatures from both user-provided signatures and preset libraries.
@@ -61,24 +60,24 @@ internal object PluginConfiguration {
      * Controls whether the unsafe function checking is enabled.
      * Default is true.
      */
-    var unsafeEnabled: Boolean = true
+    override var unsafeEnabled: Boolean = true
 
     /**
      * Controls whether unsafe function warnings should be treated as errors.
      * Default is false.
      */
-    var unsafeWarnAsError: Boolean = false
+    override var unsafeWarnAsError: Boolean = false
 
     /**
      * Set of signature strings for functions that are considered unsafe.
      * These are user-provided signatures.
      */
-    var unsafeSignatures: Set<String> = setOf()
+    override var unsafeSignatures: Set<String> = setOf()
 
     /**
      * Set of preset library names to load unsafe function signatures from.
      */
-    var unsafePresetLibs: Set<String> = setOf()
+    override var unsafePresetLibs: Set<String> = setOf()
 
     /**
      * Loads and parses all unsafe function signatures from both user-provided signatures and preset libraries.
@@ -135,53 +134,6 @@ internal object PluginConfiguration {
     }
 }
 
-/**
- * Converts a string to a set of configuration values.
- * Splits the string by commas, spaces, or colons and returns the resulting set.
- * If the resulting set is empty, returns the default set.
- *
- * @param default The default set to return if the resulting set is empty
- * @return A set of configuration values
- */
-@Contract(pure = true)
-private fun String.toConfigSet(default: Set<String>): Set<String> {
-    val set = this.trim('\'', '"')
-        .split(PluginConfiguration.SEPERATOR)
-        .map { it.trim() }
-        .filter { it.isNotBlank() }
-        .toSet()
-    return set.ifEmpty { default }
-}
-
-/**
- * Converts a set of strings to a configuration string.
- * Joins the set elements with a comma and space separator.
- *
- * @return A string representation of the set for configuration purposes
- */
-@Contract(pure = true)
-private fun Set<String>.toConfigString(): String =
-    joinToString(separator = PluginConfiguration.SEPERATOR)
-
-/**
- * Creates a plugin CLI option string for a boolean property.
- *
- * @param value The value to use (defaults to the current property value)
- * @return A string in the format "plugin:projectId:propertyName=value"
- */
-@Contract(pure = true)
-internal fun KProperty0<Boolean>.asPluginCliOption(value: Boolean = get()): String =
-    "plugin:${BuildInfo.projectId}:${name}=${value}"
-
-/**
- * Creates a plugin CLI option string for a Set<String> property.
- *
- * @param value The value to use (defaults to the current property value)
- * @return A string in the format "plugin:projectId:propertyName=value1, value2, ..."
- */
-@Contract(pure = true)
-internal fun KProperty0<Set<String>>.asPluginCliOption(value: Set<String> = get()): String =
-    "plugin:${BuildInfo.projectId}:${name}=\'${value.toConfigString()}\'"
 
 
 /**
@@ -244,7 +196,7 @@ internal class ConfigurationOption(
                 "<*.@CheckReturnValue|*.@Pure|...>",
                 "List of annotation or types to check for unused returned values",
             ) {
-                var sigs = it.toConfigSet(PluginConfiguration.unusedSignatures) + "*.@CheckReturnValue"
+                var sigs = it.toPluginConfigSet(PluginConfiguration.unusedSignatures) + "*.@CheckReturnValue"
                 PluginConfiguration.unusedSignatures = sigs
             },
             ConfigurationOption(
@@ -252,7 +204,7 @@ internal class ConfigurationOption(
                 "<kotlin-stdlib>",
                 "Presets to load",
             ) {
-                PluginConfiguration.unusedPresetLibs = it.toConfigSet(PluginConfiguration.unusedPresetLibs) + "default"
+                PluginConfiguration.unusedPresetLibs = it.toPluginConfigSet(PluginConfiguration.unusedPresetLibs) + "default"
             },
 
             //Unsafe
@@ -273,12 +225,12 @@ internal class ConfigurationOption(
                 PluginConfiguration::unsafeSignatures.name,
                 "<kotlin.Array.get(kotlin.Int)>",
                 "List of unsafe functions",
-            ) { PluginConfiguration.unsafeSignatures = it.toConfigSet(PluginConfiguration.unsafeSignatures) },
+            ) { PluginConfiguration.unsafeSignatures = it.toPluginConfigSet(PluginConfiguration.unsafeSignatures) },
             ConfigurationOption(
                 PluginConfiguration::unsafePresetLibs.name,
                 "<kotlin-stdlib>",
                 "Presets to load",
-            ) { PluginConfiguration.unsafePresetLibs = it.toConfigSet(PluginConfiguration.unsafePresetLibs) }
+            ) { PluginConfiguration.unsafePresetLibs = it.toPluginConfigSet(PluginConfiguration.unsafePresetLibs) }
         )
     }
 }

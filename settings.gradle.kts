@@ -7,9 +7,18 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+}
+
 rootProject.name = "safer"
 
 include(
-    ":safer-compiler-plugin",
-    ":safer-gradle-plugin"
+    "safer-common",
+    "safer-compiler-plugin",
+    "safer-gradle-plugin",
+    "safer-maven-plugin"
 )

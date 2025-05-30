@@ -8,13 +8,48 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 
+fun Project.stringProperty(name: String, default: String): String {
+    val prop = try {
+        property(name)
+    } catch (_: Exception) {
+        null
+    }
+    return prop?.toString()
+        ?: System.getProperty(name)
+        ?: System.getenv(name)
+        ?: default
+}
+
+
+fun Project.boolProperty(name: String, default: Boolean): Boolean =
+    stringProperty(name, default.toString()).toBoolean()
+
+fun Project.requiresBuildTool(buildTool: String) {
+    val saferBuildTool = stringProperty("safer.buildTool", "")
+
+    val validateTask = tasks.create("validate-build-tool") {
+        doFirst {
+            if(saferBuildTool != buildTool)
+                error("""
+                #######################################################
+                Requires $buildTool, use -P "safer.buildTool=$buildTool"
+                #######################################################
+            """.trimIndent())
+        }
+    }
+
+    tasks.named("publish") { dependsOn(validateTask) }
+}
+
+
 private fun String.runCommand(
     workingDir: File = File("."),
     timeoutAmount: Long = 60,
     timeoutUnit: TimeUnit = TimeUnit.SECONDS
 ): String {
+    val command = this
     return try {
-        ProcessBuilder(split("\\s(?=(?:[^'\"`]*(['\"`])[^'\"`]*\\1)*[^'\"`]*$)".toRegex()))
+        ProcessBuilder(command.split("\\s(?=(?:[^'\"`]*(['\"`])[^'\"`]*\\1)*[^'\"`]*$)".toRegex()))
             .directory(workingDir)
             .redirectOutput(ProcessBuilder.Redirect.PIPE)
             .redirectError(ProcessBuilder.Redirect.PIPE)
@@ -22,7 +57,7 @@ private fun String.runCommand(
             .apply {
                 if (!waitFor(timeoutAmount, timeoutUnit)) {
                     destroy()
-                    throw RuntimeException("Command timed out: $this")
+                    throw RuntimeException("Command timed out: $command")
                 }
             }
             .run {
@@ -34,7 +69,7 @@ private fun String.runCommand(
             }
     } catch (e: Exception) {
         if (e is RuntimeException) throw e
-        throw RuntimeException("Failed to execute command: $this", e)
+        throw RuntimeException("Failed to execute command: $command with ${e.message}", e)
     }
 }
 
@@ -73,6 +108,8 @@ open class BuildInfoTask : DefaultTask() {
     fun run() {
         require(packageName.get().isNotBlank()) { "packageName must be set" }
 
+        //TODO write to build/generated
+
         // Find the source folder
         val sourceFolder = listOf("src/commonMain/kotlin", "src/jvmMain/kotlin", "src/main/kotlin")
             .map { project.layout.projectDirectory.dir(it) }
@@ -93,15 +130,9 @@ open class BuildInfoTask : DefaultTask() {
             "unknown"
         }
 
-        // Determine if we're in development mode
-        val devMode = project.properties["development"].toString().toBooleanOrNull() == true
-
         // Combine default properties with custom properties
         val props = listOf(
-            BuildProp("projectName", project.name.toString()),
             BuildProp("projectGroup", project.group.toString()),
-            BuildProp("projectId", "${project.group}.${project.name}"),
-            BuildProp("development", devMode),
             BuildProp("projectVersion", project.version.toString()),
             BuildProp("buildTime", System.currentTimeMillis() / 1000),
             BuildProp("gitRev", gitRev),
@@ -122,7 +153,7 @@ open class BuildInfoTask : DefaultTask() {
 
 // Auto-generated file. Do not edit!
 @Suppress("MagicNumber")
-internal object BuildInfo {
+object BuildInfo {
 $stringProps}
 """
         )
