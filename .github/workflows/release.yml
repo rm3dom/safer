@@ -22,9 +22,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Build
-        run: ./gradlew build
-
       - name: Publish Compiler Plugin
         run: ./gradlew -PenablePublishing=true -P "safer.buildTool=gradle" :safer-compiler-plugin:publish
         env:
