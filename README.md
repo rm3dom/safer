@@ -129,7 +129,6 @@ Add Safer to your kotlin maven build plugin:
 | 2.1.0  | 8.3 +  | 3+    | 2.1.0-0.3-SNAPSHOT  |
 | 2.0.21 | 8.3 +  | 3+    | 2.0.21-0.3-SNAPSHOT |
 | 2.0.10 | 8.3 +  | 3+    | 2.0.10-0.3-SNAPSHOT |
-| 2.0.0  | 8.3 +  | 3+    | 2.0.0-0.3-SNAPSHOT  |
 
 **Note:** The above is a guideline, and it may work perfectly fine with earlier/later versions of Gradle and Maven.
 
