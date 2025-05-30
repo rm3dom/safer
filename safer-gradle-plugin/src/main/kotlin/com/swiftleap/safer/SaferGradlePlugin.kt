@@ -26,7 +26,7 @@ internal class SaferGradlePlugin : KotlinCompilerPluginSupportPlugin {
     override fun apply(target: Project) {
         target.extensions.create( // add a configuration object to the Gradle file
             "safer",
-            SaferConfiguration::class.java
+            SaferConfigurationBuilder::class.java
         )
     }
 
@@ -44,64 +44,66 @@ internal class SaferGradlePlugin : KotlinCompilerPluginSupportPlugin {
     override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
         val project = kotlinCompilation.target.project
 
-        val config = project.extensions.findByType(SaferConfiguration::class.java)
-            ?: SaferConfiguration()
+        val configBuilder = project.extensions.findByType(SaferConfigurationBuilder::class.java)
+            ?: SaferConfigurationBuilder()
+
+        val config = configBuilder.build()
 
         val parameters = mutableListOf<SubpluginOption>()
 
-        (config.unusedEnabled)?.let {
+        config.unusedEnabled.let {
             parameters += SubpluginOption(
-                SaferConfiguration::unusedEnabled.name,
+                SaferConfigurationSpec::unusedEnabled.name,
                 it.toString()
             )
         }
 
-        (config.unusedWarnAsError)?.let {
+        config.unusedWarnAsError.let {
             parameters += SubpluginOption(
-                SaferConfiguration::unusedWarnAsError.name,
+                SaferConfigurationSpec::unusedWarnAsError.name,
                 it.toString()
             )
         }
 
-        (config.unusedSignatures)?.let {
+        config.unusedSignatures.let {
             parameters += SubpluginOption(
-                SaferConfiguration::unusedSignatures.name,
+                SaferConfigurationSpec::unusedSignatures.name,
                 it.joinToConfigString()
             )
         }
 
-        (config.unusedPresetLibs)?.let {
+        config.unusedPresetLibs.let {
             parameters += SubpluginOption(
-                SaferConfiguration::unusedPresetLibs.name,
+                SaferConfigurationSpec::unusedPresetLibs.name,
                 it.joinToConfigString()
             )
         }
 
 
-        (config.unsafeEnabled)?.let {
+        config.unsafeEnabled.let {
             parameters += SubpluginOption(
-                SaferConfiguration::unsafeEnabled.name,
+                SaferConfigurationSpec::unsafeEnabled.name,
                 it.toString()
             )
         }
 
-        (config.unsafeWarnAsError)?.let {
+        config.unsafeWarnAsError.let {
             parameters += SubpluginOption(
-                SaferConfiguration::unsafeWarnAsError.name,
+                SaferConfigurationSpec::unsafeWarnAsError.name,
                 it.toString()
             )
         }
 
-        (config.unsafeSignatures)?.let {
+        config.unsafeSignatures.let {
             parameters += SubpluginOption(
-                SaferConfiguration::unsafeSignatures.name,
+                SaferConfigurationSpec::unsafeSignatures.name,
                 it.joinToConfigString()
             )
         }
 
-        (config.unsafePresetLibs)?.let {
+        config.unsafePresetLibs.let {
             parameters += SubpluginOption(
-                SaferConfiguration::unsafePresetLibs.name,
+                SaferConfigurationSpec::unsafePresetLibs.name,
                 it.joinToConfigString()
             )
         }
@@ -123,7 +125,7 @@ internal class SaferGradlePlugin : KotlinCompilerPluginSupportPlugin {
      *
      * This information is used to resolve the compiler plugin JAR from repositories.
      *
-     * @return The subplugin artifact information
+     * @return The sub-plugin artifact information
      */
     override fun getPluginArtifact(): SubpluginArtifact = SubpluginArtifact(
         BuildInfo.projectGroup,

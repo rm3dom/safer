@@ -1,0 +1,15 @@
+<component-set>
+    <components>
+        <component>
+            <role>org.jetbrains.kotlin.maven.KotlinMavenPluginExtension</role>
+            <role-hint>com.swiftleap.safer</role-hint>
+            <implementation>com.swiftleap.safer.SaverMavenPluginExtension</implementation>
+            <requirements>
+                <requirement>
+                    <role>org.codehaus.plexus.logging.Logger</role>
+                    <field-name>logger</field-name>
+                </requirement>
+            </requirements>
+        </component>
+    </components>
+</component-set>

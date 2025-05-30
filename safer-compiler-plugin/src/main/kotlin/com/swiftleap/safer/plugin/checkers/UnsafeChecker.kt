@@ -1,24 +1,14 @@
-package com.swiftleap.safer.plugin.backend
+package com.swiftleap.safer.plugin.checkers
 
 import com.swiftleap.safer.plugin.PluginConfiguration
-import com.swiftleap.safer.plugin.TestEvent
-import com.swiftleap.safer.plugin.TestHooks
 import com.swiftleap.safer.plugin.matches
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.error2
-import org.jetbrains.kotlin.diagnostics.rendering.CommonRenderers
-import org.jetbrains.kotlin.diagnostics.reportOn
-import org.jetbrains.kotlin.diagnostics.warning2
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
-import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
-import org.jetbrains.kotlin.fir.analysis.diagnostics.FirErrorsDefaultMessages
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
-import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.references.toResolvedFunctionSymbol
 import org.jetbrains.kotlin.fir.types.isNothing
@@ -71,15 +61,7 @@ internal class UnsafeChecker(session: FirSession) : FirAdditionalCheckersExtensi
             if (match == null)
                 return
 
-            TestHooks.trigger(TestEvent.UnsafeFunction(match, fnSymbol))
-
-            reporter.reportOn(
-                expression.source,
-                if (PluginConfiguration.unsafeWarnAsError) Errors.UNUSED_ERROR else Errors.UNUSED_WARNING,
-                expression as FirExpression,
-                match.message ?: "use a safe alternative instead",
-                context
-            )
+            reporter.reportUnsafe(context, match, expression, fnSymbol)
         }
     }
 
@@ -93,40 +75,5 @@ internal class UnsafeChecker(session: FirSession) : FirAdditionalCheckersExtensi
          * Contains only the unsafe function call checker.
          */
         override val functionCallCheckers: Set<FirFunctionCallChecker> = setOf(callChecker)
-    }
-
-    /**
-     * Contains the diagnostic errors and warnings used by this checker.
-     * Defines the messages and renderers for the diagnostics.
-     */
-    private object Errors {
-        /**
-         * Warning diagnostic for unsafe function usage.
-         */
-        val UNUSED_WARNING by warning2<PsiElement, FirExpression, String>()
-
-        /**
-         * Error diagnostic for unsafe function usage.
-         * Used when configured to treat warnings as errors.
-         */
-        val UNUSED_ERROR by error2<PsiElement, FirExpression, String>()
-
-        init {
-            FirErrorsDefaultMessages.MAP.put(
-                UNUSED_WARNING,
-                "Unsafe function ''{0}'', ''{1}''.",
-                FirDiagnosticRenderers.CALLEE_NAME,
-                CommonRenderers.STRING
-            )
-        }
-
-        init {
-            FirErrorsDefaultMessages.MAP.put(
-                UNUSED_ERROR,
-                "Unsafe function ''{0}'', ''{1}''.",
-                FirDiagnosticRenderers.CALLEE_NAME,
-                CommonRenderers.STRING
-            )
-        }
     }
 }

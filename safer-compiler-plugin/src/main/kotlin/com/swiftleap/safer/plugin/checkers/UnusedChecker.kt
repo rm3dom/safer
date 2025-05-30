@@ -1,20 +1,13 @@
-package com.swiftleap.safer.plugin.backend
+package com.swiftleap.safer.plugin.checkers
 
 import com.swiftleap.safer.plugin.*
 import org.jetbrains.annotations.Contract
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.error2
-import org.jetbrains.kotlin.diagnostics.rendering.CommonRenderers
-import org.jetbrains.kotlin.diagnostics.reportOn
-import org.jetbrains.kotlin.diagnostics.warning2
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirBlockChecker
-import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
-import org.jetbrains.kotlin.fir.analysis.diagnostics.FirErrorsDefaultMessages
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirProperty
@@ -56,28 +49,6 @@ internal class UnusedChecker(session: FirSession) : FirAdditionalCheckersExtensi
      * Used to determine if a function or type with certain annotations should have its return value used.
      */
     private val checkAnnotations by lazy { signatures.filterIsInstance<Signature.Annotation>() }
-
-    /**
-     * Reports an unused return value diagnostic.
-     *
-     * @param context The checker context
-     * @param statement The expression with the unused return value
-     * @param type The type of the unused return value
-     */
-    private fun DiagnosticReporter.reportUnused(
-        context: CheckerContext,
-        statement: FirExpression,
-        type: ConeKotlinType
-    ) {
-        TestHooks.trigger(TestEvent.ResultNotUsed(statement))
-        reportOn(
-            statement.source,
-            if (PluginConfiguration.unusedWarnAsError) Errors.UNUSED_ERROR else Errors.UNUSED_WARNING,
-            statement,
-            type.classId?.shortClassName?.toString() ?: type.toString(),
-            context
-        )
-    }
 
 
     /**
@@ -183,40 +154,5 @@ internal class UnusedChecker(session: FirSession) : FirAdditionalCheckersExtensi
          * Contains only the unused return value block checker.
          */
         override val blockCheckers: Set<FirBlockChecker> = setOf(blockChecker)
-    }
-
-    /**
-     * Contains the diagnostic errors and warnings used by this checker.
-     * Defines the messages and renderers for the diagnostics.
-     */
-    private object Errors {
-        /**
-         * Warning diagnostic for unused return value.
-         */
-        val UNUSED_WARNING by warning2<PsiElement, FirExpression, String>()
-
-        /**
-         * Error diagnostic for unused return value.
-         * Used when configured to treat warnings as errors.
-         */
-        val UNUSED_ERROR by error2<PsiElement, FirExpression, String>()
-
-        init {
-            FirErrorsDefaultMessages.MAP.put(
-                UNUSED_WARNING,
-                "Unused result ''{0}'' -> ''{1}''.",
-                FirDiagnosticRenderers.CALLEE_NAME,
-                CommonRenderers.STRING
-            )
-        }
-
-        init {
-            FirErrorsDefaultMessages.MAP.put(
-                UNUSED_ERROR,
-                "Unused result ''{0}'' -> ''{1}''.",
-                FirDiagnosticRenderers.CALLEE_NAME,
-                CommonRenderers.STRING
-            )
-        }
     }
 }

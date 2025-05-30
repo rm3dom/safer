@@ -23,7 +23,7 @@ abstract class AbstractTest {
     protected fun compileKotlin(options: Array<String>, sources: List<String>) {
         val testCounter = Compiler.testCounter.incrementAndGet()
         val classPath = Paths.get(".")
-            .resolve("build/libs/${BuildInfo.projectName}-${BuildInfo.projectVersion}.jar")
+            .resolve("build/libs/${BuildInfo.compilerPluginName}-${BuildInfo.projectVersion}.jar")
             .toAbsolutePath()
             .toFile()
 
