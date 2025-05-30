@@ -25,8 +25,25 @@ jobs:
       - name: Build
         run: ./gradlew build
 
-      - name: Publish
-        run: ./gradlew -PenablePublishing=true publish
+      - name: Publish Compiler Plugin
+        run: ./gradlew -PenablePublishing=true -P "safer.buildTool=gradle" :safer-compiler-plugin:publish
+        env:
+          MVN_CENTRAL_USERNAME: ${{ secrets.MVN_CENTRAL_USERNAME }}
+          MVN_CENTRAL_PASSWORD: ${{ secrets.MVN_CENTRAL_PASSWORD }}
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+          GPG_KEY_PASSWORD: ${{ secrets.GPG_KEY_PASSWORD }}
+
+
+      - name: Publish Gradle Plugin
+        run: ./gradlew -PenablePublishing=true -P "safer.buildTool=gradle" :safer-gradle-plugin:publish
+        env:
+          MVN_CENTRAL_USERNAME: ${{ secrets.MVN_CENTRAL_USERNAME }}
+          MVN_CENTRAL_PASSWORD: ${{ secrets.MVN_CENTRAL_PASSWORD }}
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+          GPG_KEY_PASSWORD: ${{ secrets.GPG_KEY_PASSWORD }}
+
+      - name: Publish Maven Plugin
+        run: ./gradlew -PenablePublishing=true -P "safer.buildTool=maven" :safer-maven-plugin:publish
         env:
           MVN_CENTRAL_USERNAME: ${{ secrets.MVN_CENTRAL_USERNAME }}
           MVN_CENTRAL_PASSWORD: ${{ secrets.MVN_CENTRAL_PASSWORD }}

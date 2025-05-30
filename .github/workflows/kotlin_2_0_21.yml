@@ -1,9 +1,9 @@
-name: "Kotlin 2.0.0"
+name: "Kotlin 2.0.21"
 
 on:
   push:
     branches:
-      - kotlin_2_0_0
+      - kotlin_2_0_21
 
 jobs:
   build:
