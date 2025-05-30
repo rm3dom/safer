@@ -4,7 +4,7 @@ import com.swiftleap.safer.plugin.FunctionAndDescription
 import com.swiftleap.safer.plugin.PluginConfiguration
 import com.swiftleap.safer.plugin.TestEvent
 import com.swiftleap.safer.plugin.TestHooks
-import com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.error1
 import org.jetbrains.kotlin.diagnostics.reportOn

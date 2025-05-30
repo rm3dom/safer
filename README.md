@@ -13,7 +13,8 @@ With Safer you can "annotate" third party libraries and make them a little Safer
 
 I have a condition called being a parent, so I have a foggy brain, and stupid little annoying bugs slip into my code
 ~~because safety is not the number one concern for Kotlin. (Which is fair, Kotlin has to solve many problems on many
-targets)~~ (Kotlin will be much safer in upcoming versions and will include things like Rich Errors, making Safer less useful).
+targets)~~ (Kotlin will be much safer in upcoming versions and will include things like Rich Errors and CheckReturnValue, 
+making Safer less useful).
 
 I used to use [Elm](https://elm-lang.org/) a lot and a little Rust, but it's mostly Kotlin because memory and startup
 times are not really a concern in my applications. Multiplatform and code reuse are most important in my use-cases.
