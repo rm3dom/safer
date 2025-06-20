@@ -5,6 +5,12 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import java.io.File
+import java.io.FileInputStream
+import java.io.OutputStreamWriter
+import java.io.PrintWriter
+import java.net.HttpURLConnection
+import java.net.URL
+import java.nio.file.Files
 import java.util.concurrent.TimeUnit
 
 
@@ -179,3 +185,78 @@ fun Project.generateBuildInfo(packageName: String, vararg props: BuildProp) {
         dependsOn(buildInfo)
     }
 }
+
+
+class FileUploader {
+    companion object {
+        private const val LINE_FEED = "\r\n"
+        private const val BOUNDARY = "----FormBoundary----"
+
+        fun uploadFile(requestURL: String, authorization: String?, uploadFile: File, fieldName: String) : Int {
+            val boundary = BOUNDARY
+            val url = URL(requestURL)
+            val connection = url.openConnection() as HttpURLConnection
+
+            connection.apply {
+                doOutput = true
+                doInput = true
+                requestMethod = "POST"
+                setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
+
+                if(!authorization.isNullOrBlank())
+                    setRequestProperty("Authorization", authorization)
+            }
+
+            connection.outputStream.use { outputStream ->
+                PrintWriter(OutputStreamWriter(outputStream, "UTF-8"), true).use { writer ->
+                    // Add file part
+                    writer.apply {
+                        append("--$boundary").append(LINE_FEED)
+                        append("Content-Disposition: form-data; name=\"$fieldName\"; filename=\"${uploadFile.name}\"")
+                            .append(LINE_FEED)
+                        append("Content-Type: ${Files.probeContentType(uploadFile.toPath())}")
+                            .append(LINE_FEED)
+                        append(LINE_FEED)
+                        flush()
+                    }
+
+                    // Copy file data
+                    FileInputStream(uploadFile).use { inputStream ->
+                        val buffer = ByteArray(4096)
+                        var bytesRead: Int
+                        while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                            outputStream.write(buffer, 0, bytesRead)
+                        }
+                        outputStream.flush()
+                    }
+
+                    writer.apply {
+                        append(LINE_FEED)
+                        append("--$boundary--").append(LINE_FEED)
+                        flush()
+                    }
+                }
+            }
+
+            // Get Response
+            val responseCode = connection.responseCode
+            val responseStream = if (responseCode >= 400) {
+                connection.errorStream
+            } else {
+                connection.inputStream
+            }
+
+            val response = responseStream?.bufferedReader()?.use { reader ->
+                reader.readText()
+            }
+
+            println("Server Response Code: $responseCode")
+            println("Server Response: $response")
+
+            connection.disconnect()
+
+            return responseCode
+        }
+    }
+}
+

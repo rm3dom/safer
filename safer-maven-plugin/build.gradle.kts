@@ -1,3 +1,4 @@
+
 plugins {
     id("safer-plugin.conventions")
 }
@@ -7,6 +8,5 @@ dependencies {
     compileOnly(libs.kotlin.maven.plugin)
     compileOnly(libs.maven.core)
 }
-
 
 requiresBuildTool("maven")

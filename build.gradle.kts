@@ -14,15 +14,32 @@ tasks.create("gradle-dev-publish") {
     dependsOn(":safer-compiler-plugin:publishToMavenLocal", ":safer-gradle-plugin:publishToMavenLocal")
 }
 
-tasks.create("maven-dev-publish") {
-    dependsOn(":safer-maven-plugin:publishToMavenLocal")
-}
-
 tasks.create("gradle-plugin-publish") {
-    if(enablePublishing) {
-        dependsOn(":safer-gradle-plugin:publish")
-        if(!saferVersion.contains("SNAPSHOT", true))
+    if (enablePublishing) {
+        if (!saferVersion.contains("SNAPSHOT", true))
             dependsOn(":safer-gradle-plugin:publishPlugins")
     }
 }
 
+tasks.create("gradle-publish") {
+    if (enablePublishing) {
+        if (!saferVersion.contains("SNAPSHOT", true))
+            dependsOn(
+                ":safer-compiler-plugin:uploadMavenArtifacts",
+                ":safer-gradle-plugin:publishPlugins"
+            )
+    }
+}
+
+tasks.create("maven-dev-publish") {
+    dependsOn(":safer-maven-plugin:publishToMavenLocal")
+}
+
+tasks.create("maven-publish") {
+    if (enablePublishing) {
+        if (!saferVersion.contains("SNAPSHOT", true))
+            dependsOn(
+                ":safer-maven-plugin:uploadMavenArtifacts"
+            )
+    }
+}
