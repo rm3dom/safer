@@ -1,5 +1,5 @@
 import java.nio.file.Paths
-import java.util.Base64
+import java.util.*
 
 plugins {
     id("safer-library.conventions")
@@ -8,18 +8,17 @@ plugins {
     id("com.gradleup.shadow")
 }
 
-val enablePublishing = boolProperty("safer.publish", false)
 val isSnapshot = version.toString().contains("SNAPSHOT", ignoreCase = true)
+val enablePublishing = boolProperty("safer.publish", false) && !isSnapshot
+val isGradlePlugin = project.name == "safer-gradle-plugin"
 
 val distPublishDir =
-    if(isSnapshot)
+    if (isSnapshot)
         layout.buildDirectory.dir("maven/snapshot").get()
     else
         layout.buildDirectory.dir("maven/publish").get()
 
 val distPublishUrl = Paths.get(distPublishDir.toString(), "repository").toUri().toString()
-
-val isGradlePlugin = project.name == "safer-gradle-plugin"
 
 dependencies {
     implementation(project(":safer-common"))
@@ -30,6 +29,8 @@ tasks.shadowJar {
     dependencies {
         exclude {
             it.moduleGroup == "org.jetbrains"
+        }
+        exclude {
             it.moduleGroup == "org.jetbrains.kotlin"
         }
     }
@@ -46,7 +47,7 @@ fun configureEmptyJavadocArtifact(): org.gradle.jvm.tasks.Jar {
     return javadocJar
 }
 
-fun configureSourcesArtifact() : org.gradle.jvm.tasks.Jar {
+fun configureSourcesArtifact(): org.gradle.jvm.tasks.Jar {
     val sourcesJar by tasks.creating(Jar::class) {
         archiveClassifier.set("sources")
         from(sourceSets.main.get().allSource)
@@ -56,41 +57,26 @@ fun configureSourcesArtifact() : org.gradle.jvm.tasks.Jar {
 
 
 publishing {
-    //val isSnapshot = version.toString().contains("SNAPSHOT", ignoreCase = true)
-    //val repositoryUrl = if (isSnapshot) {
-    //    "https://central.sonatype.com/repository/maven-snapshots/"
-    //} else {
-    //    "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
-    //}
-
     publications {
         repositories {
             mavenLocal()
 
-            if (enablePublishing) {
-                maven {
-                    name = "local-staging"
-                    setUrl(distPublishUrl)
-                    //credentials {
-                    //    username = stringProperty("MVN_CENTRAL_USERNAME", "bad")
-                    //    password = stringProperty("MVN_CENTRAL_PASSWORD", "bad")
-                    //}
-                }
+            maven {
+                name = "local-staging"
+                setUrl(distPublishUrl)
             }
         }
 
-        val javadocJar = if (!isGradlePlugin) configureEmptyJavadocArtifact() else null
-        val sourcesJar = if (!isGradlePlugin) configureSourcesArtifact() else null
-
         create<MavenPublication>("mavenJava") {
-            //From the shadow jar, embed common and compiler plugin in maven
             from(components["shadow"])
             groupId = project.group.toString()
             artifactId = project.name
             version = project.version.toString()
 
-            artifact(javadocJar)
-            artifact(sourcesJar)
+            if (!isGradlePlugin) {
+                artifact(configureEmptyJavadocArtifact())
+                artifact(configureSourcesArtifact())
+            }
 
             pom {
                 name.set(project.name)
@@ -145,13 +131,12 @@ val packageMavenArtifacts by tasks.registering(Zip::class) {
 }
 
 
-
 val uploadMavenArtifacts by tasks.registering {
+    enabled = enablePublishing
     dependsOn(packageMavenArtifacts)
 
     doLast {
         val uriBase = "https://central.sonatype.com/api/v1/publisher/upload"
-        //val uriBase = "http://localhost:8080/api/v1/publisher/upload"
         val publishingType = "USER_MANAGED"
         val deploymentName = "${project.name}-$version"
         val uri = "$uriBase?name=$deploymentName&publishingType=$publishingType"
@@ -164,9 +149,8 @@ val uploadMavenArtifacts by tasks.registering {
         println("Sending request to $uri...")
 
         val statusCode = FileUploader.uploadFile(uri, "Bearer $base64Auth", bundleFile, "bundle")
-        if (statusCode != 201) {
-            error("Upload error to Central repository. Status code $statusCode.")
-        }
+
+        if (statusCode != 201) error("Upload error to Central repository. Status code $statusCode.")
     }
 }
 

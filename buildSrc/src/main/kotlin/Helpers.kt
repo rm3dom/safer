@@ -190,10 +190,9 @@ fun Project.generateBuildInfo(packageName: String, vararg props: BuildProp) {
 class FileUploader {
     companion object {
         private const val LINE_FEED = "\r\n"
-        private const val BOUNDARY = "----FormBoundary----"
+        private const val BOUNDARY = "FormBoundary_b4905c4953ab4add8c6bf8c042015d02"
 
         fun uploadFile(requestURL: String, authorization: String?, uploadFile: File, fieldName: String) : Int {
-            val boundary = BOUNDARY
             val url = URL(requestURL)
             val connection = url.openConnection() as HttpURLConnection
 
@@ -201,7 +200,7 @@ class FileUploader {
                 doOutput = true
                 doInput = true
                 requestMethod = "POST"
-                setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
+                setRequestProperty("Content-Type", "multipart/form-data; boundary=$BOUNDARY")
 
                 if(!authorization.isNullOrBlank())
                     setRequestProperty("Authorization", authorization)
@@ -211,7 +210,7 @@ class FileUploader {
                 PrintWriter(OutputStreamWriter(outputStream, "UTF-8"), true).use { writer ->
                     // Add file part
                     writer.apply {
-                        append("--$boundary").append(LINE_FEED)
+                        append("--$BOUNDARY").append(LINE_FEED)
                         append("Content-Disposition: form-data; name=\"$fieldName\"; filename=\"${uploadFile.name}\"")
                             .append(LINE_FEED)
                         append("Content-Type: ${Files.probeContentType(uploadFile.toPath())}")
@@ -232,7 +231,7 @@ class FileUploader {
 
                     writer.apply {
                         append(LINE_FEED)
-                        append("--$boundary--").append(LINE_FEED)
+                        append("--$BOUNDARY--").append(LINE_FEED)
                         flush()
                     }
                 }

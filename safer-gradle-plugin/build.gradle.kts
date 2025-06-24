@@ -12,8 +12,6 @@ dependencies {
 ext["gradle.publish.key"] = stringProperty("GRADLE_KEY", "bad")
 ext["gradle.publish.secret"] = stringProperty("GRADLE_SECRET", "bad")
 
-// Multiple publications with coordinates 'com.swiftleap:safer-gradle-plugin:2.1.20-0.3-SNAPSHOT' are published to repository 'MavenLocal'.
-// The publications 'mavenJava' in project ':safer-gradle-plugin' and 'pluginMaven' in project ':safer-gradle-plugin' will overwrite each other!
 
 gradlePlugin {
     vcsUrl = "https://github.com/rm3dom/safer.git"
