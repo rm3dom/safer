@@ -19,11 +19,14 @@ description = when (project.name) {
     "safer-maven-plugin" -> "Safer Maven plugin"
     "safer-compiler-plugin" -> "Safer compiler plugin"
     else -> project.name
-} + ". Better Safer than, sorry."
+} + ". Better Safer than sorry."
 
 kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(8))
+    }
+    target {
+        withSourcesJar(true)
     }
 }
 
@@ -38,3 +41,4 @@ tasks.withType<JavaCompile> {
     targetCompatibility = "1.8"
     options.release.set(8)
 }
+
