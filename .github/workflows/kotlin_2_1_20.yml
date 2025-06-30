@@ -1,0 +1,35 @@
+name: "Kotlin 2.1.20"
+
+on:
+  push:
+    branches:
+      - kotlin_2_1_20
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: Checkout project sources
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 8
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Test
+        run: ./gradlew -P "safer.buildTool=gradle" :safer-compiler-plugin:test
+
+      - name: Gradle Plugin Assemble
+        run: ./gradlew -P "safer.buildTool=gradle" :safer-gradle-plugin:assemble
+
+      - name: Maven Plugin Assemble
+        run: ./gradlew -P "safer.buildTool=maven" :safer-maven-plugin:assemble
