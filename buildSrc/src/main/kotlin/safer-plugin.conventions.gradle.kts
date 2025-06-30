@@ -1,4 +1,5 @@
-import org.gradle.kotlin.dsl.withType
+import java.nio.file.Paths
+import java.util.*
 
 plugins {
     id("safer-library.conventions")
@@ -7,7 +8,17 @@ plugins {
     id("com.gradleup.shadow")
 }
 
-val enablePublishing = boolProperty("safer.publish", false)
+val isSnapshot = version.toString().contains("SNAPSHOT", ignoreCase = true)
+val enablePublishing = boolProperty("safer.publish", false) && !isSnapshot
+val isGradlePlugin = project.name == "safer-gradle-plugin"
+
+val distPublishDir =
+    if (isSnapshot)
+        layout.buildDirectory.dir("maven/snapshot").get()
+    else
+        layout.buildDirectory.dir("maven/publish").get()
+
+val distPublishUrl = Paths.get(distPublishDir.toString(), "repository").toUri().toString()
 
 dependencies {
     implementation(project(":safer-common"))
@@ -18,6 +29,8 @@ tasks.shadowJar {
     dependencies {
         exclude {
             it.moduleGroup == "org.jetbrains"
+        }
+        exclude {
             it.moduleGroup == "org.jetbrains.kotlin"
         }
     }
@@ -25,21 +38,45 @@ tasks.shadowJar {
 
 tasks.publish { dependsOn(tasks.shadowJar) }
 
-publishing {
-    val isSnapshot = version.toString().contains("SNAPSHOT", ignoreCase = true)
-    val repositoryUrl = if (isSnapshot) {
-        "https://central.sonatype.com/repository/maven-snapshots/"
-    } else {
-        "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
+fun configureEmptyJavadocArtifact(): org.gradle.jvm.tasks.Jar {
+    val javadocJar by project.tasks.creating(Jar::class) {
+        archiveClassifier.set("javadoc")
+        // contents are deliberately left empty
+        // https://central.sonatype.org/publish/requirements/#supply-javadoc-and-sources
     }
+    return javadocJar
+}
 
+fun configureSourcesArtifact(): org.gradle.jvm.tasks.Jar {
+    val sourcesJar by tasks.creating(Jar::class) {
+        archiveClassifier.set("sources")
+        from(sourceSets.main.get().allSource)
+    }
+    return sourcesJar
+}
+
+
+publishing {
     publications {
+        repositories {
+            mavenLocal()
+
+            maven {
+                name = "local-staging"
+                setUrl(distPublishUrl)
+            }
+        }
+
         create<MavenPublication>("mavenJava") {
+            from(components["shadow"])
             groupId = project.group.toString()
             artifactId = project.name
             version = project.version.toString()
-            //From the shadow jar, embed common and compiler plugin in maven
-            from(components["shadow"])
+
+            if (!isGradlePlugin) {
+                artifact(configureEmptyJavadocArtifact())
+                artifact(configureSourcesArtifact())
+            }
 
             pom {
                 name.set(project.name)
@@ -65,23 +102,10 @@ publishing {
                 }
             }
         }
-
-        repositories {
-            mavenLocal()
-
-            if (enablePublishing) {
-                maven {
-                    name = "MavenCentral"
-                    setUrl(repositoryUrl)
-                    credentials {
-                        username = stringProperty("MVN_CENTRAL_USERNAME", "bad")
-                        password = stringProperty("MVN_CENTRAL_PASSWORD", "bad")
-                    }
-                }
-            }
-        }
     }
 }
+
+
 
 signing {
     isRequired = enablePublishing
@@ -98,3 +122,38 @@ if (enablePublishing) {
         mustRunAfter(tasks.withType<Sign>())
     }
 }
+
+val packageMavenArtifacts by tasks.registering(Zip::class) {
+    from(distPublishUrl)
+    archiveFileName.set("${project.name}-artifacts.zip")
+    destinationDirectory.set(distPublishDir)
+    dependsOn(tasks.publish)
+}
+
+
+val uploadMavenArtifacts by tasks.registering {
+    enabled = enablePublishing
+    dependsOn(packageMavenArtifacts)
+
+    doLast {
+        val uriBase = "https://central.sonatype.com/api/v1/publisher/upload"
+        val publishingType = "USER_MANAGED"
+        val deploymentName = "${project.name}-$version"
+        val uri = "$uriBase?name=$deploymentName&publishingType=$publishingType"
+
+        val userName = stringProperty("MVN_CENTRAL_USERNAME", "bad")
+        val password = stringProperty("MVN_CENTRAL_PASSWORD", "bad")
+        val base64Auth = Base64.getEncoder().encode("$userName:$password".toByteArray()).toString(Charsets.UTF_8)
+        val bundleFile = packageMavenArtifacts.get().archiveFile.get().asFile
+
+        println("Sending request to $uri...")
+
+        val statusCode = FileUploader.uploadFile(uri, "Bearer $base64Auth", bundleFile, "bundle")
+
+        if (statusCode != 201) error("Upload error to Central repository. Status code $statusCode.")
+    }
+}
+
+
+
+

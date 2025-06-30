@@ -26,24 +26,25 @@ jobs:
         run: ./gradlew -P "safer.buildTool=gradle" :safer-compiler-plugin:test
 
       - name: Publish Compiler Plugin
-        run: ./gradlew -P "safer.publish=true" -P "safer.buildTool=gradle" :safer-compiler-plugin:publish
+        run: ./gradlew -P "safer.publish=true" -P "safer.buildTool=gradle" :compiler-plugin-publish
         env:
           MVN_CENTRAL_USERNAME: ${{ secrets.MVN_CENTRAL_USERNAME }}
           MVN_CENTRAL_PASSWORD: ${{ secrets.MVN_CENTRAL_PASSWORD }}
           GPG_KEY: ${{ secrets.GPG_KEY }}
           GPG_KEY_PASSWORD: ${{ secrets.GPG_KEY_PASSWORD }}
-
 
       - name: Publish Gradle Plugin
-        run: ./gradlew -P "safer.publish=true" -P "safer.buildTool=gradle" :safer-gradle-plugin:publish
+        run: ./gradlew -P "safer.publish=true" -P "safer.buildTool=gradle" :gradle-plugin-publish
         env:
           MVN_CENTRAL_USERNAME: ${{ secrets.MVN_CENTRAL_USERNAME }}
           MVN_CENTRAL_PASSWORD: ${{ secrets.MVN_CENTRAL_PASSWORD }}
           GPG_KEY: ${{ secrets.GPG_KEY }}
           GPG_KEY_PASSWORD: ${{ secrets.GPG_KEY_PASSWORD }}
+          GRADLE_KEY: ${{ secrets.GRADLE_KEY }}
+          GRADLE_SECRET: ${{ secrets.GRADLE_SECRET }}
 
       - name: Publish Maven Plugin
-        run: ./gradlew -P "safer.publish=true" -P "safer.buildTool=maven" :safer-maven-plugin:publish
+        run: ./gradlew -P "safer.publish=true" -P "safer.buildTool=maven" :maven-plugin-publish
         env:
           MVN_CENTRAL_USERNAME: ${{ secrets.MVN_CENTRAL_USERNAME }}
           MVN_CENTRAL_PASSWORD: ${{ secrets.MVN_CENTRAL_PASSWORD }}
