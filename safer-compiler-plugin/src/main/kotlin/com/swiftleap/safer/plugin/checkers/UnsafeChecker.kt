@@ -1,7 +1,9 @@
+@file:MustUseReturnValue
 package com.swiftleap.safer.plugin.checkers
 
 import com.swiftleap.safer.plugin.PluginConfiguration
 import com.swiftleap.safer.plugin.matches
+import org.jetbrains.kotlin.DeprecatedForRemovalCompilerApi
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
@@ -44,6 +46,7 @@ internal class UnsafeChecker(session: FirSession) : FirAdditionalCheckersExtensi
          * @param context The checker context
          * @param reporter The diagnostic reporter to report issues
          */
+        @OptIn(DeprecatedForRemovalCompilerApi::class)
         override fun check(
             expression: FirFunctionCall,
             context: CheckerContext,

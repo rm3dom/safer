@@ -1,3 +1,4 @@
+@file:MustUseReturnValue
 package com.swiftleap.safer
 
 import org.jetbrains.annotations.Contract
@@ -112,6 +113,7 @@ open class SaferConfigurationBuilder {
      * This class provides methods for configuring how the plugin checks
      * for unused return values.
      */
+    @Deprecated("Use kotlin 2.2.0 @file:MustUseReturnValue.")
     inner class UnusedConfiguration {
         /**
          * Enables or disables the unused return value checking.
@@ -188,6 +190,8 @@ open class SaferConfigurationBuilder {
      *
      * @param action A configuration block for the unused return value checking
      */
+    @Deprecated("Use kotlin 2.2.0 @file:MustUseReturnValue.")
+    @Suppress("DEPRECATION")
     fun unused(action: UnusedConfiguration.() -> Unit) {
         action(UnusedConfiguration())
     }

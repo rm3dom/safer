@@ -1,7 +1,9 @@
+@file:MustUseReturnValue
 package com.swiftleap.safer.plugin.checkers
 
 import com.swiftleap.safer.plugin.*
 import org.jetbrains.annotations.Contract
+import org.jetbrains.kotlin.DeprecatedForRemovalCompilerApi
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
@@ -78,7 +80,7 @@ internal class UnusedChecker(session: FirSession) : FirAdditionalCheckersExtensi
      */
     @Contract(pure = true)
     private fun FirFunctionSymbol<*>.isChecked() =
-        annotations.isChecked() ||
+        resolvedAnnotationsWithClassIds.isChecked() ||
                 checkFunctions
                     .getOrDefault(name.toString(), emptyList())
                     .firstOrNull { it.matches(this) } != null
@@ -101,6 +103,7 @@ internal class UnusedChecker(session: FirSession) : FirAdditionalCheckersExtensi
          * @param context The checker context
          * @param reporter The diagnostic reporter to report issues
          */
+        @OptIn(DeprecatedForRemovalCompilerApi::class)
         override fun check(
             expression: FirBlock,
             context: CheckerContext,
@@ -130,7 +133,7 @@ internal class UnusedChecker(session: FirSession) : FirAdditionalCheckersExtensi
                 ) return@forEachIndexed
 
                 val classSymbol = type.toRegularClassSymbol(session)
-                val classSymbolAnnotations = classSymbol?.annotations
+                val classSymbolAnnotations = classSymbol?.resolvedAnnotationsWithClassIds
                 // type checks
                 val isAdditionalCheckType = type.classId?.let { checkTypes.anyMatch(it) } == true
                 val fnSymbol = statement.calleeReference.toResolvedFunctionSymbol()

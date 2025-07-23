@@ -9,14 +9,15 @@ import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
 import org.jetbrains.kotlin.config.Services
 import java.nio.file.Paths
+import java.util.concurrent.Semaphore
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.io.path.Path
 import kotlin.test.assertEquals
 
 
 abstract class AbstractTest {
+
     private object Compiler {
-        val compiler = K2JVMCompiler()
         val testCounter = AtomicInteger(0)
     }
 
@@ -56,7 +57,7 @@ abstract class AbstractTest {
         }
         val renderer = MessageRenderer.PLAIN_RELATIVE_PATHS
         val messageCollector: MessageCollector = PrintingMessageCollector(System.err, renderer, true)
-        val exit = Compiler.compiler.exec(messageCollector, Services.EMPTY, arguments)
+        val exit = K2JVMCompiler().exec(messageCollector, Services.EMPTY, arguments)
         System.gc()
         when (exit) {
             ExitCode.OK -> Unit

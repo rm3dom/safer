@@ -1,6 +1,28 @@
 [![Main](https://github.com/rm3dom/safer/actions/workflows/main.yml/badge.svg)](https://github.com/rm3dom/safer/actions/workflows/main.yml)
 
 
+**Note: Safer CheckReturnValue now obsolete since kotlin 2.2.0**
+
+Kotlin 2.2.0 introduced `@MustUseReturnValue` which is preferred over `@CheckReturnValue`, see: [KEEP-0412-unused-return-value-checker](https://github.com/Kotlin/KEEP/blob/main/proposals/KEEP-0412-unused-return-value-checker.md).
+
+Enable it using free compiler args:
+
+```kotlin
+kotlin {
+    compilerOptions {
+        allWarningsAsErrors = true
+        //Options: disable, check, full
+        freeCompilerArgs.add("-Xreturn-value-checker=full")
+    }
+}
+```
+and by annotating your file with:
+
+```kotlin
+@file:MustUseReturnValue
+```
+
+
 # Safer - Kotlin Compiler Plugin
 
 Safer is a Kotlin compiler plugin focused on enhancing code safety by ensuring return values are used and that
@@ -13,7 +35,7 @@ With Safer you can "annotate" third party libraries and make them a little Safer
 
 I have a condition called being a parent, so I have a foggy brain, and stupid little annoying bugs slip into my code
 ~~because safety is not the number one concern for Kotlin. (Which is fair, Kotlin has to solve many problems on many
-targets)~~ (Kotlin will be much safer in upcoming versions and will include things like Rich Errors and CheckReturnValue, 
+targets)~~ (Kotlin will be much safer in upcoming versions and will include things like Rich Errors and @MustUseReturnValue, 
 making Safer less useful).
 
 I used to use [Elm](https://elm-lang.org/) a lot and a little Rust, but it's mostly Kotlin because memory and startup
@@ -125,6 +147,7 @@ Add Safer to your kotlin maven build plugin:
 
 | Kotlin | Gradle | Maven | Safer        |
 |--------|--------|-------|--------------|
+| 2.2.0  | 8.3 +  | 3+    | 2.2.0-0.3.2  |
 | 2.1.20 | 8.3 +  | 3+    | 2.1.20-0.3.1 |
 | 2.1.0  | 8.3 +  | 3+    | 2.1.0-0.3.1  |
 | 2.0.21 | 8.3 +  | 3+    | 2.0.21-0.3.1 |

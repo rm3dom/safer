@@ -22,6 +22,10 @@ description = when (project.name) {
 } + ". Better Safer than sorry."
 
 kotlin {
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        freeCompilerArgs.add("-Xreturn-value-checker=full")
+    }
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(8))
     }

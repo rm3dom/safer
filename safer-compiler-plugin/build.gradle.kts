@@ -15,6 +15,11 @@ dependencies {
     testImplementation(libs.kotlin.test)
 }
 
+
+tasks.test {
+    maxParallelForks = 1
+}
+
 tasks.create("rewrite-types") {
     //Pairs of "kotlin-compiler" to "kotlin-compiler-embeddable" strings
     val pairs = listOf(
