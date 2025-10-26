@@ -5,10 +5,6 @@ import org.jetbrains.annotations.Contract
 import kotlin.reflect.KProperty0
 
 interface SaferConfigurationSpec {
-    val unusedEnabled: Boolean
-    val unusedWarnAsError: Boolean
-    val unusedSignatures: Set<String>
-    val unusedPresetLibs: Set<String>
     val unsafeEnabled: Boolean
     val unsafeWarnAsError: Boolean
     val unsafeSignatures: Set<String>
@@ -20,10 +16,6 @@ interface SaferConfigurationSpec {
 }
 
 data class SaferConfiguration(
-    override val unusedEnabled: Boolean,
-    override val unusedWarnAsError: Boolean,
-    override val unusedSignatures: Set<String>,
-    override val unusedPresetLibs: Set<String>,
     override val unsafeEnabled: Boolean,
     override val unsafeWarnAsError: Boolean,
     override val unsafeSignatures: Set<String>,
@@ -87,114 +79,17 @@ fun KProperty0<Set<String>>.asPluginCliOption(value: Set<String> = get()): Strin
  * through the Gradle build script.
  */
 open class SaferConfigurationBuilder {
-    private var unusedEnabled: Boolean? = null
-    private var unusedWarnAsError: Boolean? = null
-    private var unusedSignatures: MutableSet<String>? = null
-    private var unusedPresetLibs: MutableSet<String>? = null
     private var unsafeEnabled: Boolean? = null
     private var unsafeWarnAsError: Boolean? = null
     private var unsafeSignatures: MutableSet<String>? = null
     private var unsafePresetLibs: MutableSet<String>? = null
 
     fun build() : SaferConfiguration = SaferConfiguration(
-        unusedEnabled = unusedEnabled ?: true,
-        unusedWarnAsError = unusedWarnAsError ?: false,
-        unusedSignatures = unusedSignatures ?: mutableSetOf(),
-        unusedPresetLibs = unusedPresetLibs ?: mutableSetOf(),
         unsafeEnabled = unsafeEnabled ?: true,
         unsafeWarnAsError = unsafeWarnAsError ?: false,
         unsafeSignatures = unsafeSignatures ?: mutableSetOf(),
         unsafePresetLibs = unsafePresetLibs ?: mutableSetOf()
     )
-
-    /**
-     * Configuration class for the unused return value checking feature.
-     *
-     * This class provides methods for configuring how the plugin checks
-     * for unused return values.
-     */
-    @Deprecated("Use kotlin 2.2.0 @file:MustUseReturnValue.")
-    inner class UnusedConfiguration {
-        /**
-         * Enables or disables the unused return value checking.
-         *
-         * @param enabled Whether to enable the feature (default: true)
-         */
-        fun enabled(enabled: Boolean = true) {
-            unusedEnabled = enabled
-        }
-
-        /**
-         * Enables or disables the unused return value checking.
-         */
-        var enabled
-            set(value) = enabled(value)
-            get() = unusedEnabled ?: true
-
-        /**
-         * Sets whether unused return value warnings should be treated as errors.
-         *
-         * @param enabled Whether to treat warnings as errors (default: true)
-         */
-        fun warnAsError(enabled: Boolean = true) {
-            unusedWarnAsError = enabled
-        }
-
-        /**
-         * Sets whether unused return value warnings should be treated as errors.
-         */
-        var warnAsError
-            set(value) = warnAsError(value)
-            get() = unusedWarnAsError ?: true
-
-        /**
-         * Adds the Kotlin standard library to the list of libraries to check.
-         * This will check that return values from Kotlin standard library functions are used.
-         */
-        fun checkKotlinStdLib() = addLib("kotlin-stdlib")
-
-        /**
-         * Adds the Kotlinx coroutines core library to the list of libraries to check.
-         */
-        fun checkKotlinCoroutines() = addLib("kotlin-coroutines")
-
-        /**
-         * Adds the Java standard library to the list of libraries to check.
-         * This will check that return values from Java standard library functions are used.
-         */
-        fun checkJavaExperimental() = addLib("java")
-
-        /**
-         * Adds signatures to check for unused return values.
-         *
-         * @param signature One or more signature strings to check
-         */
-        fun checkSignatures(vararg signature: String) {
-            unusedSignatures = unusedSignatures ?: mutableSetOf()
-            unusedSignatures?.addAll(signature)
-        }
-
-        /**
-         * Adds a library to the list of preset libraries to check.
-         *
-         * @param lib The name of the library to add
-         */
-        private fun addLib(lib: String) {
-            unusedPresetLibs = unusedPresetLibs ?: mutableSetOf()
-            unusedPresetLibs?.add(lib)
-        }
-    }
-
-    /**
-     * Configures the unused return value checking feature.
-     *
-     * @param action A configuration block for the unused return value checking
-     */
-    @Deprecated("Use kotlin 2.2.0 @file:MustUseReturnValue.")
-    @Suppress("DEPRECATION")
-    fun unused(action: UnusedConfiguration.() -> Unit) {
-        action(UnusedConfiguration())
-    }
 
     /**
      * Configuration class for the unsafe function checking feature.

@@ -24,7 +24,7 @@ description = when (project.name) {
 kotlin {
     compilerOptions {
         allWarningsAsErrors.set(true)
-        freeCompilerArgs.add("-Xreturn-value-checker=full")
+        freeCompilerArgs.addAll("-Xcontext-parameters", "-Xreturn-value-checker=full", "-Werror")
     }
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(8))

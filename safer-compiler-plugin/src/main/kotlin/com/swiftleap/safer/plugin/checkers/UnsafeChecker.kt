@@ -38,20 +38,8 @@ internal class UnsafeChecker(session: FirSession) : FirAdditionalCheckersExtensi
      * This checker is applied to all function calls in the code being analyzed.
      */
     private val callChecker = object : FirFunctionCallChecker(MppCheckerKind.Common) {
-        /**
-         * Checks if a function call matches any of the configured unsafe function signatures.
-         * If a match is found, reports a diagnostic warning or error.
-         *
-         * @param expression The function call expression to check
-         * @param context The checker context
-         * @param reporter The diagnostic reporter to report issues
-         */
-        @OptIn(DeprecatedForRemovalCompilerApi::class)
-        override fun check(
-            expression: FirFunctionCall,
-            context: CheckerContext,
-            reporter: DiagnosticReporter
-        ) {
+        context(context: CheckerContext, reporter: DiagnosticReporter)
+        override fun check(expression: FirFunctionCall) {
             val type = expression.resolvedType
             if (type.isUnit || type.isNothing)
                 return

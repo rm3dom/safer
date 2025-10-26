@@ -15,13 +15,6 @@ internal sealed class TestEvent {
     object PluginLoaded : TestEvent()
 
     /**
-     * Event triggered when a result is not used when it should be.
-     *
-     * @property element The FIR element with the unused result
-     */
-    class ResultNotUsed(val element: FirElement) : TestEvent()
-
-    /**
      * Event triggered when an unsafe function is used.
      *
      * @property signature The signature of the unsafe function with its description

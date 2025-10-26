@@ -13,49 +13,6 @@ import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
  * during the command line processing.
  */
 internal object PluginConfiguration : SaferConfigurationSpec {
-    /**
-     * Controls whether the unused return value checking is enabled.
-     * Default is true.
-     */
-    override var unusedEnabled: Boolean = true
-
-    /**
-     * Controls whether unused return value warnings should be treated as errors.
-     * Default is false.
-     */
-    override var unusedWarnAsError: Boolean = false
-
-    /**
-     * Set of signature strings for functions or types that should have their return values used.
-     * These are user-provided signatures.
-     */
-    override var unusedSignatures: Set<String> = setOf()
-
-    /**
-     * Set of preset library names to load unused signatures from.
-     * Default includes the "default" preset.
-     */
-    override var unusedPresetLibs: Set<String> = setOf("default")
-
-    /**
-     * Loads and parses all unused signatures from both user-provided signatures and preset libraries.
-     *
-     * @return A list of parsed signatures to check for unused return values
-     */
-    @Contract(pure = true)
-    fun loadUnusedSignatures(): List<Signature> =
-        unusedSignatures
-            .mapNotNull {
-                try {
-                    Signature.parse(it)
-                } catch (_: Exception) {
-                    //We should validate / error at configuration time
-                    null
-                }
-            } + unusedPresetLibs
-            .flatMap { libName ->
-                loadLibrary("unused-$libName.txt").map { it.signature }
-            }
 
     /**
      * Controls whether the unsafe function checking is enabled.
@@ -117,7 +74,7 @@ internal object PluginConfiguration : SaferConfigurationSpec {
      */
     @Contract(pure = true)
     private fun loadLibrary(name: String): List<SignatureAndMessage> {
-        val stream = this::class.java.classLoader.getResourceAsStream(name) ?: return emptyList()
+        val stream = this::class.java.classLoader.getResourceAsStream(name) ?: error("Unable to load safer preset library: '$name'")
         stream.use { stream ->
             return stream.bufferedReader().useLines { lines ->
                 lines.mapNotNull { line ->
@@ -178,36 +135,6 @@ internal class ConfigurationOption(
          * These options can be specified on the command line to configure the plugin.
          */
         val pluginOptions: List<ConfigurationOption> = listOf(
-            //Check return
-            ConfigurationOption(
-                PluginConfiguration::unusedEnabled.name,
-                "<true|false>",
-                "Whether the plugin is enabled or not",
-            ) { PluginConfiguration.unusedEnabled = it.toBooleanLenient() ?: error("Invalid value for enabled") },
-            ConfigurationOption(
-                PluginConfiguration::unusedWarnAsError.name,
-                "<true|false>",
-                "Whether checks should be applied as errors",
-            ) {
-                PluginConfiguration.unusedWarnAsError =
-                    it.toBooleanLenient() ?: error("Invalid value for warnOnly")
-            },
-            ConfigurationOption(
-                PluginConfiguration::unusedSignatures.name,
-                "<*.@CheckReturnValue|*.@Pure|...>",
-                "List of annotation or types to check for unused returned values",
-            ) {
-                var sigs = it.toPluginConfigSet(PluginConfiguration.unusedSignatures) + "*.@CheckReturnValue"
-                PluginConfiguration.unusedSignatures = sigs
-            },
-            ConfigurationOption(
-                PluginConfiguration::unusedPresetLibs.name,
-                "<kotlin-stdlib>",
-                "Presets to load",
-            ) {
-                PluginConfiguration.unusedPresetLibs = it.toPluginConfigSet(PluginConfiguration.unusedPresetLibs) + "default"
-            },
-
             //Unsafe
             ConfigurationOption(
                 PluginConfiguration::unsafeEnabled.name,

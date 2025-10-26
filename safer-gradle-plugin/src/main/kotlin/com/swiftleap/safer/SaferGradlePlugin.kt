@@ -30,7 +30,7 @@ internal class SaferGradlePlugin : KotlinCompilerPluginSupportPlugin {
         )
     }
 
-    private fun Iterable<String>.joinToConfigString() = joinToString("&")
+    private fun Iterable<String>.joinToConfigString() = joinToString(SaferConfigurationSpec.SEPERATOR)
 
     /**
      * Applies the plugin to a specific Kotlin compilation.
@@ -50,35 +50,6 @@ internal class SaferGradlePlugin : KotlinCompilerPluginSupportPlugin {
         val config = configBuilder.build()
 
         val parameters = mutableListOf<SubpluginOption>()
-
-        config.unusedEnabled.let {
-            parameters += SubpluginOption(
-                SaferConfigurationSpec::unusedEnabled.name,
-                it.toString()
-            )
-        }
-
-        config.unusedWarnAsError.let {
-            parameters += SubpluginOption(
-                SaferConfigurationSpec::unusedWarnAsError.name,
-                it.toString()
-            )
-        }
-
-        config.unusedSignatures.let {
-            parameters += SubpluginOption(
-                SaferConfigurationSpec::unusedSignatures.name,
-                it.joinToConfigString()
-            )
-        }
-
-        config.unusedPresetLibs.let {
-            parameters += SubpluginOption(
-                SaferConfigurationSpec::unusedPresetLibs.name,
-                it.joinToConfigString()
-            )
-        }
-
 
         config.unsafeEnabled.let {
             parameters += SubpluginOption(

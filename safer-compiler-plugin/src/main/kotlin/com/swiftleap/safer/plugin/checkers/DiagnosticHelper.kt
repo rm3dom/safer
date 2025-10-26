@@ -7,7 +7,10 @@ import com.swiftleap.safer.plugin.TestEvent
 import com.swiftleap.safer.plugin.TestHooks
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
+import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
+import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
 import org.jetbrains.kotlin.diagnostics.error1
+import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.diagnostics.warning1
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -18,48 +21,24 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.classId
 import java.text.MessageFormat
+import kotlin.getValue
 
-private object Defaults {
-    val WARNING by warning1<PsiElement, String>()
-    val ERROR by error1<PsiElement, String>()
-    const val UNUSED_RESULT_MESSAGE = "Unused result {0} -> {1}"
+
+object UnsafeDiagnostics : KtDiagnosticsContainer() {
+    val UNSAFE_FUNCTION_WARNING by warning1<PsiElement, String>()
+    val UNSAFE_FUNCTION_ERROR by error1<PsiElement, String>()
     const val UNSAFE_FUNCTION_MESSAGE = "Unsafe function {0}, {1}"
     const val UNSAFE_DEFAULT_MESSAGE = "use a safer alternative instead"
+    override fun getRendererFactory(): BaseDiagnosticRendererFactory = UnsafeErrorMessages
 }
 
-/**
- * Reports an unused return value diagnostic.
- *
- * Triggers `TestEvent.ResultNotUsed` test hook event.
- *
- * @param context The checker context
- * @param statement The expression with the unused return value
- * @param type The type of the unused return value
- */
-internal fun DiagnosticReporter.reportUnused(
-    context: CheckerContext,
-    statement: FirExpression,
-    type: ConeKotlinType
-) {
-    TestHooks.trigger(TestEvent.ResultNotUsed(statement))
-
-    val message =
-        MessageFormat.format(
-            Defaults.UNUSED_RESULT_MESSAGE,
-            FirDiagnosticRenderers.CALLEE_NAME.render(statement),
-            type.classId?.shortClassName ?: type
-        )
-
-    reportOn(
-        statement.source,
-        if (PluginConfiguration.unusedWarnAsError)
-            Defaults.ERROR
-        else
-            Defaults.WARNING,
-        message,
-        context
-    )
+object UnsafeErrorMessages : BaseDiagnosticRendererFactory() {
+    override val MAP by KtDiagnosticFactoryToRendererMap("UnsafeErrors") { map ->
+        val _ = map.put(UnsafeDiagnostics.UNSAFE_FUNCTION_WARNING, "{0}", null)
+        val _ = map.put(UnsafeDiagnostics.UNSAFE_FUNCTION_ERROR, "{0}", null)
+    }
 }
+
 
 
 /**
@@ -82,17 +61,17 @@ internal fun DiagnosticReporter.reportUnsafe(
 
     val message =
         MessageFormat.format(
-            Defaults.UNSAFE_FUNCTION_MESSAGE,
+            UnsafeDiagnostics.UNSAFE_FUNCTION_MESSAGE,
             FirDiagnosticRenderers.CALLEE_NAME.render(statement),
-            signature.message ?: Defaults.UNSAFE_DEFAULT_MESSAGE
+            signature.message ?: UnsafeDiagnostics.UNSAFE_DEFAULT_MESSAGE
         )
 
     reportOn(
         statement.source,
         if (PluginConfiguration.unsafeWarnAsError)
-            Defaults.ERROR
+            UnsafeDiagnostics.UNSAFE_FUNCTION_ERROR
         else
-            Defaults.WARNING,
+            UnsafeDiagnostics.UNSAFE_FUNCTION_WARNING,
         message,
         context
     )

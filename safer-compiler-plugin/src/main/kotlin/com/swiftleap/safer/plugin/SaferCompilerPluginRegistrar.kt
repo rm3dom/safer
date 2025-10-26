@@ -3,7 +3,6 @@ package com.swiftleap.safer.plugin
 
 import com.swiftleap.safer.BuildInfo
 import com.swiftleap.safer.plugin.checkers.UnsafeChecker
-import com.swiftleap.safer.plugin.checkers.UnusedChecker
 import org.jetbrains.kotlin.backend.common.toLogger
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
@@ -42,9 +41,7 @@ internal class SaferCompilerPluginRegistrar : CompilerPluginRegistrar() {
         val messageCollector = configuration.get(CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
         val logger = messageCollector.toLogger()
 
-        if (!PluginConfiguration.unusedEnabled
-            && !PluginConfiguration.unsafeEnabled
-        ) return
+        if (!PluginConfiguration.unsafeEnabled) return
 
         logger.log("Safer plugin registered")
 
@@ -61,28 +58,10 @@ internal class SaferCompilerPluginRegistrar : CompilerPluginRegistrar() {
             )
         }
 
-        if (PluginConfiguration.unusedEnabled)
-            FirExtensionRegistrarAdapter.registerExtension(CheckReturnFirExtensionRegistrar)
-
         if (PluginConfiguration.unsafeEnabled)
             FirExtensionRegistrarAdapter.registerExtension(UnsafeFirExtensionRegistrar)
 
         TestHooks.trigger(TestEvent.PluginLoaded)
-    }
-}
-
-/**
- * FIR extension registrar for the unused return value checking functionality.
- *
- * This registrar adds the UnusedChecker to the Kotlin compiler's FIR pipeline
- * to check for unused return values.
- */
-private object CheckReturnFirExtensionRegistrar : FirExtensionRegistrar() {
-    /**
-     * Configures the plugin by adding the UnusedChecker extension.
-     */
-    override fun ExtensionRegistrarContext.configurePlugin() {
-        +::UnusedChecker
     }
 }
 

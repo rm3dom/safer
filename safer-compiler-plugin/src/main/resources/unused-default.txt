@@ -1,2 +1,0 @@
-*.@CheckReturnValue
-*.@Contract(pure=true)

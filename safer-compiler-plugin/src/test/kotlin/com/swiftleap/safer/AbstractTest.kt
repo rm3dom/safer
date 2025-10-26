@@ -65,43 +65,11 @@ abstract class AbstractTest {
         }
     }
 
-    protected fun expectUnusedSingle(unusedCount: Int, source: String) = expectUnused(unusedCount, listOf(source))
-
-    protected fun expectUnused(unusedCount: Int, sources: List<String>) {
-        val unused = mutableListOf<TestEvent.ResultNotUsed>()
-        TestHooks.register {
-            when (it) {
-                is TestEvent.ResultNotUsed -> unused.add(it)
-                else -> Unit
-            }
-        }
-
-        compileKotlin(
-            arrayOf(
-                PluginConfiguration::unsafeEnabled.asPluginCliOption(false),
-                PluginConfiguration::unusedEnabled.asPluginCliOption(true),
-                PluginConfiguration::unusedWarnAsError.asPluginCliOption(false),
-                PluginConfiguration::unusedPresetLibs.asPluginCliOption(setOf("kotlin-stdlib", "java")),
-                PluginConfiguration::unusedSignatures.asPluginCliOption(
-                    setOf(
-                        "*.@Pure"
-                    )
-                )
-            ), sources
-        )
-
-        assertEquals(
-            unusedCount,
-            unused.size,
-            "Unexpected unused count"
-        )
-    }
-
     protected fun expectUnsafeSingle(unsafeCount: Int, source: String) = expectUnsafe(unsafeCount, listOf(source))
 
     protected fun expectUnsafe(unsafeCount: Int, sources: List<String>) {
         val unsafe = mutableListOf<TestEvent.UnsafeFunction>()
-        TestHooks.register {
+        val _ = TestHooks.register {
             when (it) {
                 is TestEvent.UnsafeFunction -> unsafe.add(it)
                 else -> Unit
@@ -112,8 +80,7 @@ abstract class AbstractTest {
             arrayOf(
                 PluginConfiguration::unsafeEnabled.asPluginCliOption(true),
                 PluginConfiguration::unsafePresetLibs.asPluginCliOption(setOf("kotlin-stdlib", "java")),
-                PluginConfiguration::unsafeWarnAsError.asPluginCliOption(false),
-                PluginConfiguration::unusedEnabled.asPluginCliOption(false),
+                PluginConfiguration::unsafeWarnAsError.asPluginCliOption(false)
             ), sources
         )
 
