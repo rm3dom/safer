@@ -44,7 +44,7 @@ Add the plugin to your project by including it in your `build.gradle.kts` file:
 ```kotlin
 plugins {
     kotlin("multiplatform")
-    id("com.swiftleap.safer") version "2.2.20-0.3.2"  // Match with your Kotlin version
+    id("com.swiftleap.safer") version "2.2.20-0.3.3"  // Match with your Kotlin version
 }
 
 repositories {
