@@ -1,28 +1,6 @@
 [![Main](https://github.com/rm3dom/safer/actions/workflows/main.yml/badge.svg)](https://github.com/rm3dom/safer/actions/workflows/main.yml)
 
 
-**Note: Safer CheckReturnValue now obsolete since kotlin 2.2.0**
-
-Kotlin 2.2.0 introduced `@MustUseReturnValue` which is preferred over `@CheckReturnValue`, see: [KEEP-0412-unused-return-value-checker](https://github.com/Kotlin/KEEP/blob/main/proposals/KEEP-0412-unused-return-value-checker.md).
-
-Enable it using free compiler args:
-
-```kotlin
-kotlin {
-    compilerOptions {
-        allWarningsAsErrors = true
-        //Options: disable, check, full
-        freeCompilerArgs.add("-Xreturn-value-checker=full")
-    }
-}
-```
-and by annotating your file with:
-
-```kotlin
-@file:MustUseReturnValue
-```
-
-
 # Safer - Kotlin Compiler Plugin
 
 Safer is essentially a 'mass deprecation' tool. It checks your code for unsafe functions and warns you when you use them. 
@@ -88,6 +66,7 @@ Add Safer to your kotlin maven build plugin:
 
 | Kotlin | Gradle | Maven | Safer        |
 |--------|--------|-------|--------------|
+| 2.3.10 | 8.3 +  | 3+    | 2.3.10-0.3.4 |
 | 2.2.20 | 8.3 +  | 3+    | 2.2.20-0.3.3 |
 | 2.2.0  | 8.3 +  | 3+    | 2.2.0-0.3.2  |
 | 2.1.20 | 8.3 +  | 3+    | 2.1.20-0.3.1 |

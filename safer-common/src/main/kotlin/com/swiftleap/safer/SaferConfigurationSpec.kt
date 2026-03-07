@@ -1,4 +1,3 @@
-@file:MustUseReturnValue
 package com.swiftleap.safer
 
 import org.jetbrains.annotations.Contract

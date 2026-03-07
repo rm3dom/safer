@@ -21,9 +21,7 @@ tasks.create("maven-dev-publish") {
 
 tasks.create("compiler-plugin-publish") {
     enabled = enablePublishing
-    dependsOn(
-        ":safer-compiler-plugin:uploadMavenArtifacts",
-    )
+    dependsOn(":safer-compiler-plugin:uploadMavenArtifacts")
 }
 
 tasks.create("gradle-plugin-publish") {
@@ -33,7 +31,5 @@ tasks.create("gradle-plugin-publish") {
 
 tasks.create("maven-plugin-publish") {
     enabled = enablePublishing
-    dependsOn(
-        ":safer-maven-plugin:uploadMavenArtifacts"
-    )
+    dependsOn(":safer-maven-plugin:uploadMavenArtifacts")
 }

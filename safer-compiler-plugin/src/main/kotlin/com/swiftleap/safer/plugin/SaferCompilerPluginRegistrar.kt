@@ -1,7 +1,7 @@
-@file:MustUseReturnValue
 package com.swiftleap.safer.plugin
 
 import com.swiftleap.safer.BuildInfo
+import com.swiftleap.safer.compilerProjectId
 import com.swiftleap.safer.plugin.checkers.UnsafeChecker
 import org.jetbrains.kotlin.backend.common.toLogger
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
  */
 @OptIn(ExperimentalCompilerApi::class)
 internal class SaferCompilerPluginRegistrar : CompilerPluginRegistrar() {
+    override val pluginId: String = BuildInfo.compilerProjectId
 
     /**
      * Indicates that this plugin supports the K2 compiler.

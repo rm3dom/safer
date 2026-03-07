@@ -35,12 +35,14 @@ fun Project.requiresBuildTool(buildTool: String) {
 
     val validateTask = tasks.create("validate-build-tool") {
         doFirst {
-            if(saferBuildTool != buildTool)
-                error("""
+            if (saferBuildTool != buildTool)
+                error(
+                    """
                 #######################################################
                 Requires $buildTool, use -P "safer.buildTool=$buildTool"
                 #######################################################
-            """.trimIndent())
+            """.trimIndent()
+                )
         }
     }
 
@@ -105,9 +107,9 @@ open class BuildInfoTask : DefaultTask() {
 
 
     private fun String.toBooleanOrNull() =
-        when(lowercase()) {
-           "yes", "y", "true" -> true
-           else -> false
+        when (lowercase()) {
+            "yes", "y", "true" -> true
+            else -> false
         }
 
     @TaskAction
@@ -192,7 +194,7 @@ class FileUploader {
         private const val LINE_FEED = "\r\n"
         private const val BOUNDARY = "FormBoundary_b4905c4953ab4add8c6bf8c042015d02"
 
-        fun uploadFile(requestURL: String, authorization: String?, uploadFile: File, fieldName: String) : Int {
+        fun uploadFile(requestURL: String, authorization: String?, uploadFile: File, fieldName: String): Int {
             val url = URL(requestURL)
             val connection = url.openConnection() as HttpURLConnection
 
@@ -202,7 +204,7 @@ class FileUploader {
                 requestMethod = "POST"
                 setRequestProperty("Content-Type", "multipart/form-data; boundary=$BOUNDARY")
 
-                if(!authorization.isNullOrBlank())
+                if (!authorization.isNullOrBlank())
                     setRequestProperty("Authorization", authorization)
             }
 

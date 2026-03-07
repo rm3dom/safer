@@ -1,11 +1,10 @@
-@file:MustUseReturnValue
 package com.swiftleap.safer.plugin.checkers
 
 import com.swiftleap.safer.plugin.FunctionAndDescription
 import com.swiftleap.safer.plugin.PluginConfiguration
 import com.swiftleap.safer.plugin.TestEvent
 import com.swiftleap.safer.plugin.TestHooks
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer

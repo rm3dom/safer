@@ -1,4 +1,3 @@
-@file:MustUseReturnValue
 package com.swiftleap.safer.plugin
 
 import com.swiftleap.safer.SaferConfigurationSpec

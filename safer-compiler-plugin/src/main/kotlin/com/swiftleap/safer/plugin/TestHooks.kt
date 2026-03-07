@@ -1,7 +1,5 @@
-@file:MustUseReturnValue
 package com.swiftleap.safer.plugin
 
-import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 
 /**

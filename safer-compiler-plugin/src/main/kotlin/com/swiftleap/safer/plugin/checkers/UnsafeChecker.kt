@@ -1,4 +1,3 @@
-@file:MustUseReturnValue
 package com.swiftleap.safer.plugin.checkers
 
 import com.swiftleap.safer.plugin.PluginConfiguration

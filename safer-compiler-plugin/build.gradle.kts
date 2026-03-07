@@ -45,6 +45,13 @@ tasks.create("rewrite-types") {
     }
 }
 
+//tasks.named("publishMavenJavaPublicationToMavenLocal") {
+//    dependsOn(tasks.named("jar"))
+//}
+//tasks.named("generateMetadataFileForMavenJavaPublication") {
+//    dependsOn(tasks.named("jar"))
+//}
+
 
 tasks.compileKotlin {
     dependsOn("rewrite-types")
