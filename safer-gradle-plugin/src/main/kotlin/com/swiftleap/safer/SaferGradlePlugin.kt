@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
  * This plugin integrates the Safer compiler plugin with Gradle, allowing users
  * to configure the plugin through their Gradle build scripts.
  */
-internal class SaferGradlePlugin : KotlinCompilerPluginSupportPlugin {
+class SaferGradlePlugin : KotlinCompilerPluginSupportPlugin {
 
     /**
      * Applies the plugin to the target project.
@@ -24,10 +24,20 @@ internal class SaferGradlePlugin : KotlinCompilerPluginSupportPlugin {
      * @param target The target project
      */
     override fun apply(target: Project) {
-        target.extensions.create( // add a configuration object to the Gradle file
-            "safer",
-            SaferConfigurationBuilder::class.java
-        )
+        if (target.extensions.findByName("safer") == null) {
+            target.extensions.create( // add a configuration object to the Gradle file
+                "safer",
+                SaferConfigurationBuilder::class.java
+            )
+        }
+        target.subprojects { sub ->
+            if (sub.extensions.findByName("safer") == null) {
+                sub.extensions.create(
+                    "safer",
+                    SaferConfigurationBuilder::class.java
+                )
+            }
+        }
     }
 
     private fun Iterable<String>.joinToConfigString() = joinToString(SaferConfigurationSpec.SEPERATOR)
@@ -44,8 +54,15 @@ internal class SaferGradlePlugin : KotlinCompilerPluginSupportPlugin {
     override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
         val project = kotlinCompilation.target.project
 
-        val configBuilder = project.extensions.findByType(SaferConfigurationBuilder::class.java)
-            ?: SaferConfigurationBuilder()
+        val builders = generateSequence(project) { it.parent }
+            .mapNotNull { it.extensions.findByType(SaferConfigurationBuilder::class.java) }
+            .toList()
+
+        val configBuilder = if (builders.isNotEmpty()) {
+            builders.reversed().reduce { parent, child -> parent.merge(child) }
+        } else {
+            SaferConfigurationBuilder()
+        }
 
         val config = configBuilder.build()
 

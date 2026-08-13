@@ -83,6 +83,28 @@ open class SaferConfigurationBuilder {
     private var unsafeSignatures: MutableSet<String>? = null
     private var unsafePresetLibs: MutableSet<String>? = null
 
+    /**
+     * Merges configuration from a child builder into a copy of this (parent) builder.
+     * Values defined in the child builder override values in this parent builder.
+     * Collection properties (signatures, preset libs) are merged by union.
+     *
+     * @param child The child configuration builder to merge over this parent
+     * @return A new merged [SaferConfigurationBuilder]
+     */
+    fun merge(child: SaferConfigurationBuilder?): SaferConfigurationBuilder {
+        if (child == null) return this
+        val merged = SaferConfigurationBuilder()
+        merged.unsafeEnabled = child.unsafeEnabled ?: this.unsafeEnabled
+        merged.unsafeWarnAsError = child.unsafeWarnAsError ?: this.unsafeWarnAsError
+        merged.unsafeSignatures = if (this.unsafeSignatures != null || child.unsafeSignatures != null) {
+            ((this.unsafeSignatures.orEmpty()) + (child.unsafeSignatures.orEmpty())).toMutableSet()
+        } else null
+        merged.unsafePresetLibs = if (this.unsafePresetLibs != null || child.unsafePresetLibs != null) {
+            ((this.unsafePresetLibs.orEmpty()) + (child.unsafePresetLibs.orEmpty())).toMutableSet()
+        } else null
+        return merged
+    }
+
     fun build() : SaferConfiguration = SaferConfiguration(
         unsafeEnabled = unsafeEnabled ?: true,
         unsafeWarnAsError = unsafeWarnAsError ?: false,

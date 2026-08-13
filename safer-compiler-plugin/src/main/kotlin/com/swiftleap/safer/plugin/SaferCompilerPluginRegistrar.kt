@@ -3,11 +3,9 @@ package com.swiftleap.safer.plugin
 import com.swiftleap.safer.BuildInfo
 import com.swiftleap.safer.compilerProjectId
 import com.swiftleap.safer.plugin.checkers.UnsafeChecker
-import org.jetbrains.kotlin.backend.common.toLogger
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.cli.common.messages.getLogger
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
-import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
@@ -39,8 +37,7 @@ internal class SaferCompilerPluginRegistrar : CompilerPluginRegistrar() {
      * @param configuration The compiler configuration
      */
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        val messageCollector = configuration.get(CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
-        val logger = messageCollector.toLogger()
+        val logger = configuration.getLogger()
 
         if (!PluginConfiguration.unsafeEnabled) return
 

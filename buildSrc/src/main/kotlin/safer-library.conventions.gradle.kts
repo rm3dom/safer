@@ -24,10 +24,10 @@ description = when (project.name) {
 kotlin {
     compilerOptions {
         allWarningsAsErrors.set(true)
-        freeCompilerArgs.addAll("-Xcontext-parameters", "-Xreturn-value-checker=full", "-Werror")
+        freeCompilerArgs.addAll("-Xreturn-value-checker=full", "-Werror")
     }
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
     target {
         withSourcesJar(true)
@@ -36,13 +36,13 @@ kotlin {
 
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_1_8)
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
 tasks.withType<JavaCompile> {
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
-    options.release.set(8)
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
+    options.release.set(17)
 }
 

@@ -7,6 +7,9 @@ plugins {
 dependencies {
     compileOnly(project(":safer-compiler-plugin"))
     compileOnly(libs.kotlin.gradle.plugin.api)
+
+    testImplementation(libs.kotlin.gradle.plugin.api)
+    testImplementation(libs.kotlin.test)
 }
 
 ext["gradle.publish.key"] = stringProperty("GRADLE_KEY", "bad")

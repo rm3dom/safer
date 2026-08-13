@@ -1,12 +1,9 @@
-name: Main
+name: "Kotlin 2.2.0"
 
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
+      - kotlin_2_4_10
 
 jobs:
   build:
